@@ -17,8 +17,8 @@ import {
 } from "./storage";
 
 export const API_CONFIG = {
-  BASE_URL: import.meta.env?.VITE_API_URL || "http://localhost:5000/api",
-  USE_BACKEND: false, // Flip to true when server is running
+  BASE_URL: "/api",
+  USE_BACKEND: true, // Switched to true to connect to the Node.js backend
 };
 
 function getAuthHeaders() {
