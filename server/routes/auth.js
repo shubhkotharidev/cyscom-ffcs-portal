@@ -85,6 +85,8 @@ router.post('/staff-login', authRateLimiter, (req, res) => {
   // Credentials must be set in .env — no hardcoded fallbacks allowed
   const superUser = process.env.SUPERADMIN_USER ? process.env.SUPERADMIN_USER.trim().toLowerCase() : null;
   const superPass = process.env.SUPERADMIN_PASS ? process.env.SUPERADMIN_PASS.trim() : null;
+  const adminUser = process.env.ADMIN_USER ? process.env.ADMIN_USER.trim().toLowerCase() : null;
+  const adminPass = process.env.ADMIN_PASS ? process.env.ADMIN_PASS.trim() : null;
 
   if (!superUser || !superPass) {
     console.error('CRITICAL: SUPERADMIN_USER or SUPERADMIN_PASS not set in environment variables.');
@@ -97,6 +99,17 @@ router.post('/staff-login', authRateLimiter, (req, res) => {
       name: 'Super Admin',
       regNo: 'STAFF-001',
       role: 'super_admin',
+    };
+    const token = jwt.sign(user, JWT_SECRET, { expiresIn: '8h' });
+    return res.json({ token, user });
+  }
+
+  if (adminUser && adminPass && u === adminUser && p === adminPass) {
+    const user = {
+      email: 'admin@vitstudent.ac.in',
+      name: 'Core Admin',
+      regNo: 'STAFF-002',
+      role: 'admin',
     };
     const token = jwt.sign(user, JWT_SECRET, { expiresIn: '8h' });
     return res.json({ token, user });
