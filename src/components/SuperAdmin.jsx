@@ -17,6 +17,62 @@ function formatLink(url) {
   return /^https?:\/\//i.test(url) ? url : `https://${url}`;
 }
 
+function ApproveModal({ submission, onConfirm, onClose }) {
+  const [title, setTitle] = useState(submission.description || "");
+  const [points, setPoints] = useState("");
+
+  function submit(e) {
+    e.preventDefault();
+    const pts = parseInt(points, 10);
+    if (!title.trim() || !pts || pts <= 0) return;
+    onConfirm(submission.id, title.trim(), pts);
+    onClose();
+  }
+
+  return createPortal(
+    <div className="cg-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="cg-modal">
+        <button className="cg-modal-close" onClick={onClose}>✕</button>
+        <div className="cg-label" style={{ marginBottom: 6 }}>APPROVE SUBMISSION</div>
+        <div className="cg-display" style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>Award Points</div>
+        <div style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 18, padding: "10px 14px", background: "var(--bg)", border: "1px solid var(--border)", wordBreak: "break-all" }}>
+          Member: <strong style={{ color: "var(--text)" }}>{submission.name}</strong> ({submission.regNo})
+        </div>
+        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="cg-form-row">
+            <div className="cg-label">CONTRIBUTION TITLE / TASK</div>
+            <input
+              className="cg-input"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="e.g. Workshop Lead"
+              style={{ marginTop: 6 }}
+            />
+          </div>
+          <div className="cg-form-row">
+            <div className="cg-label">POINTS TO AWARD</div>
+            <input
+              className="cg-input"
+              type="number"
+              min="1"
+              placeholder="50"
+              value={points}
+              onChange={(e) => setPoints(e.target.value)}
+              required
+              style={{ marginTop: 6 }}
+            />
+          </div>
+          <button type="submit" className="cg-btn cg-btn-super" disabled={!title.trim() || !points}>
+            CONFIRM & AWARD POINTS
+          </button>
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════ */
 /* Modals for Direct Points & Department Management                       */
 /* ══════════════════════════════════════════════════════════════════════ */
