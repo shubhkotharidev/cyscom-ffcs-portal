@@ -14,9 +14,9 @@ import Admin from "./components/Admin";
 export default function App() {
   const [phase, setPhase] = useState("landing"); // landing -> pixel -> login -> app
   const [tab, setTab] = useState("dashboard");
-  const [users, setUsers] = useState(null);
-  const [projects, setProjects] = useState(null);
-  const [pending, setPending] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [pending, setPending] = useState([]);
   const [sessionEmail, setSessionEmail] = useState(null);
   const [sessionUserFallback, setSessionUserFallback] = useState(null);
   const [loginError, setLoginError] = useState("");
@@ -59,7 +59,7 @@ export default function App() {
         try {
           const { user } = await apiCall("/auth/me");
           setSessionEmail(user.email);
-          setSessionUserFallback(user);
+          setSessionUserFallback({ ...user, contributions: user.contributions || [] });
           setTab(user.role === "super_admin" ? "superadmin" : user.role === "admin" ? "admin" : "dashboard");
           setPhase("app");
           await refreshData();
@@ -98,12 +98,12 @@ export default function App() {
         localStorage.setItem("club:jwt", data.token);
         emailToSet = data.user.email;
         roleToSet = data.user.role;
-        setSessionUserFallback(data.user);
+        setSessionUserFallback({ ...data.user, contributions: data.user.contributions || [] });
       } else {
         // Staff login already hit /auth/staff-login in Login.jsx and saved the JWT.
         emailToSet = payload.email;
         roleToSet = payload.role;
-        setSessionUserFallback(payload);
+        setSessionUserFallback({ ...payload, contributions: payload.contributions || [] });
       }
       
       setSessionEmail(emailToSet);

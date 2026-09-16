@@ -12,6 +12,11 @@ function RoleBadge({ role }) {
   return <span className={`cg-badge ${cls}`}>{label}</span>;
 }
 
+function formatLink(url) {
+  if (!url) return "#";
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
 /* ══════════════════════════════════════════════════════════════════════ */
 /* Modals for Direct Points & Department Management                       */
 /* ══════════════════════════════════════════════════════════════════════ */
