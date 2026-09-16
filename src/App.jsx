@@ -18,6 +18,7 @@ export default function App() {
   const [projects, setProjects] = useState(null);
   const [pending, setPending] = useState(null);
   const [sessionEmail, setSessionEmail] = useState(null);
+  const [sessionUserFallback, setSessionUserFallback] = useState(null);
   const [loginError, setLoginError] = useState("");
   const [ready, setReady] = useState(false);
 
@@ -58,6 +59,7 @@ export default function App() {
         try {
           const { user } = await apiCall("/auth/me");
           setSessionEmail(user.email);
+          setSessionUserFallback(user);
           setTab(user.role === "super_admin" ? "superadmin" : user.role === "admin" ? "admin" : "dashboard");
           setPhase("app");
           await refreshData();
@@ -70,7 +72,7 @@ export default function App() {
     init();
   }, [apiCall, refreshData]);
 
-  const currentUser = users && sessionEmail ? users.find((u) => u.email === sessionEmail) : null;
+  const currentUser = (users && sessionEmail ? users.find((u) => u.email === sessionEmail) : null) || sessionUserFallback;
 
   /* ── Tab Guard for Staff ── */
   useEffect(() => {
@@ -96,10 +98,12 @@ export default function App() {
         localStorage.setItem("club:jwt", data.token);
         emailToSet = data.user.email;
         roleToSet = data.user.role;
+        setSessionUserFallback(data.user);
       } else {
         // Staff login already hit /auth/staff-login in Login.jsx and saved the JWT.
         emailToSet = payload.email;
         roleToSet = payload.role;
+        setSessionUserFallback(payload);
       }
       
       setSessionEmail(emailToSet);
