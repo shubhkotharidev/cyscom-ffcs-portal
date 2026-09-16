@@ -73,7 +73,7 @@ export default function Login({ onLogin, error }) {
 
     // Enforce VIT domain
     if (!email.endsWith("@vitstudent.ac.in") && !email.endsWith("@vit.ac.in")) {
-      setLocalError("Access restricted to @vitstudent.ac.in / @vit.ac.in accounts only.");
+      setLocalError("Access restricted to @vitstudent.ac.in accounts only.");
       return;
     }
 
@@ -118,7 +118,7 @@ export default function Login({ onLogin, error }) {
         onLogin(data.user);
         return;
       }
-      setLocalError(data.error || "Invalid staff username or password.");
+      setLocalError(data.error || "Invalid username or password.");
     } catch {
       setLocalError("Cannot connect to server. Please ensure the backend is running.");
     }
@@ -177,7 +177,7 @@ export default function Login({ onLogin, error }) {
                   style={{ width: "100%", fontSize: 11 }}
                   onClick={() => { setLocalError(""); setStep("staff"); }}
                 >
-                  STAFF / ADMIN PORTAL LOGIN →
+                  ADMIN PORTAL LOGIN →
                 </button>
               </div>
             </div>
@@ -225,7 +225,7 @@ export default function Login({ onLogin, error }) {
           {step === "staff" && (
             <form onSubmit={handleStaffLogin}>
               <div style={{ marginBottom: 14 }}>
-                <div className="cg-label" style={{ marginBottom: 6 }}>STAFF USERNAME</div>
+                <div className="cg-label" style={{ marginBottom: 6 }}>USERNAME</div>
                 <input
                   className="cg-input"
                   placeholder="Enter username"
@@ -252,7 +252,7 @@ export default function Login({ onLogin, error }) {
               )}
 
               <button type="submit" className="cg-btn cg-btn-super" style={{ width: "100%", marginTop: 18 }}>
-                LOGIN TO STAFF PANEL →
+                LOGIN TO ADMIN PANEL →
               </button>
 
               <button
@@ -263,11 +263,6 @@ export default function Login({ onLogin, error }) {
               >
                 ← BACK TO MEMBER LOGIN
               </button>
-
-              <div style={{ marginTop: 20, padding: "10px 12px", background: "var(--bg)", border: "1px solid var(--border)", fontSize: 10.5, color: "var(--text-dim)", lineHeight: 1.6, textAlign: "center" }}>
-                🔒 <strong>Secured Staff Authentication</strong><br />
-                Credentials managed via root <code style={{ color: "var(--accent)" }}>.env</code> file.
-              </div>
             </form>
           )}
         </div>
