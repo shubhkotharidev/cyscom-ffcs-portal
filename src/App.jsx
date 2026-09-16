@@ -1,14 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-
-import { ADMIN_EMAILS, SUPER_ADMIN_EMAILS, SEED_PROJECTS, SEED_USERS, SEED_PENDING } from "./lib/constants";
-import {
-  loadUsers, saveUsers,
-  loadProjects, saveProjects,
-  loadSession, saveSession,
-  loadPending, savePending,
-  loadActivity, saveActivity,
-  clearAllStorage,
-} from "./lib/storage";
+import { useState, useEffect, useCallback } from "react";
 
 import GlobalStyle from "./components/GlobalStyle";
 import Landing, { PixelTransition } from "./components/Landing";
@@ -27,28 +17,58 @@ export default function App() {
   const [users, setUsers] = useState(null);
   const [projects, setProjects] = useState(null);
   const [pending, setPending] = useState(null);
-  const [activity, setActivity] = useState([]);
   const [sessionEmail, setSessionEmail] = useState(null);
   const [loginError, setLoginError] = useState("");
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      // Wipe out local storage completely as requested
-      await clearAllStorage();
-      let u = SEED_USERS;
-      await saveUsers(u);
-      let p = SEED_PROJECTS;
-      await saveProjects(p);
-      let pend = SEED_PENDING;
-      await savePending(pend);
+  // Core API Wrapper
+  const apiCall = useCallback(async (path, method = "GET", body = null) => {
+    const token = localStorage.getItem("club:jwt");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    
+    const opts = { method, headers };
+    if (body) opts.body = JSON.stringify(body);
+    
+    const res = await fetch(`/api${path}`, opts);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "API Request Failed");
+    return data;
+  }, []);
+
+  const refreshData = useCallback(async () => {
+    try {
+      const [u, p, s] = await Promise.all([
+        apiCall("/users"),
+        apiCall("/projects"),
+        apiCall("/submissions"),
+      ]);
       setUsers(u);
       setProjects(p);
-      setPending(pend);
-      setActivity([]);
+      setPending(s);
+    } catch (err) {
+      console.error("Failed to load data:", err);
+    }
+  }, [apiCall]);
+
+  useEffect(() => {
+    async function init() {
+      const token = localStorage.getItem("club:jwt");
+      if (token) {
+        try {
+          const { user } = await apiCall("/auth/me");
+          setSessionEmail(user.email);
+          setTab(user.role === "super_admin" ? "superadmin" : user.role === "admin" ? "admin" : "dashboard");
+          setPhase("app");
+          await refreshData();
+        } catch (e) {
+          localStorage.removeItem("club:jwt");
+        }
+      }
       setReady(true);
-    })();
-  }, []);
+    }
+    init();
+  }, [apiCall, refreshData]);
 
   const currentUser = users && sessionEmail ? users.find((u) => u.email === sessionEmail) : null;
 
@@ -63,244 +83,163 @@ export default function App() {
     }
   }, [currentUser, tab]);
 
-  /* ── Activity Logging ── */
-  async function logActivityEntry(entry) {
-    const actor = users ? users.find((u) => u.email === sessionEmail) : null;
-    const newEntry = {
-      id: `act_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-      timestamp: new Date().toISOString(),
-      actorEmail: sessionEmail,
-      actorName: actor ? actor.name : "Staff",
-      ...entry,
-    };
-    const updated = [newEntry, ...(activity || [])];
-    setActivity(updated);
-    await saveActivity(updated);
-  }
-
-  async function handleClearActivity() {
-    setActivity([]);
-    await saveActivity([]);
-  }
-
   /* ── Login ── */
-  async function handleLogin({ email, name, regNo, role: inputRole }) {
+  async function handleLogin(payload) {
     setLoginError("");
-    let list = users ? [...users] : [];
-    let existing = list.find((u) => u.email === email);
-    if (!existing) {
-      const role = inputRole
-        ? inputRole
-        : SUPER_ADMIN_EMAILS.includes(email)
-        ? "super_admin"
-        : ADMIN_EMAILS.includes(email)
-        ? "admin"
-        : "member";
-      existing = { email, name, regNo, departments: [], locked: false, points: 0, role, excluded: false, contributions: [] };
-      list.push(existing);
-      setUsers(list);
-      await saveUsers(list);
+    try {
+      let emailToSet = payload.email;
+      let roleToSet = payload.role;
+
+      // If it's a member from Google Auth, the backend hasn't generated a JWT yet.
+      if (!payload.role) {
+        const data = await apiCall("/auth/login", "POST", payload);
+        localStorage.setItem("club:jwt", data.token);
+        emailToSet = data.user.email;
+        roleToSet = data.user.role;
+      } else {
+        // Staff login already hit /auth/staff-login in Login.jsx and saved the JWT.
+        emailToSet = payload.email;
+        roleToSet = payload.role;
+      }
+      
+      setSessionEmail(emailToSet);
+      setPhase("app");
+      setTab(roleToSet === "super_admin" ? "superadmin" : roleToSet === "admin" ? "admin" : "dashboard");
+      await refreshData();
+    } catch (err) {
+      setLoginError(err.message);
     }
-    setSessionEmail(email);
-    await saveSession({ email });
-    const role = existing.role;
-    setTab(role === "super_admin" ? "superadmin" : role === "admin" ? "admin" : "dashboard");
-    setPhase("app");
   }
 
   /* ── Logout ── */
-  async function handleLogout() {
+  function handleLogout() {
+    localStorage.removeItem("club:jwt");
     setSessionEmail(null);
-    await saveSession(null);
+    setUsers(null);
+    setProjects(null);
+    setPending(null);
     setPhase("landing");
     setTab("dashboard");
   }
 
   /* ── Departments ── */
   async function handleLockDepartments(selected) {
-    const list = users.map((u) => (u.email === sessionEmail ? { ...u, departments: selected, locked: true } : u));
-    setUsers(list);
-    await saveUsers(list);
+    try {
+      await apiCall("/users/departments", "POST", { departments: selected });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Project application ── */
   async function handleApply(projectId) {
-    const proj = projects.find((p) => p.id === projectId);
-    if (!proj || proj.seatsFilled >= proj.seatsTotal || proj.applicants.includes(sessionEmail)) return;
-    const newProjects = projects.map((p) =>
-      p.id === projectId ? { ...p, seatsFilled: p.seatsFilled + 1, applicants: [...p.applicants, sessionEmail] } : p
-    );
-    setProjects(newProjects);
-    await saveProjects(newProjects);
+    try {
+      await apiCall(`/projects/${projectId}/apply`, "POST");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Submit contribution (member) ── */
-  async function handleSubmitContribution({ description, driveLink }) {
-    const user = users.find((u) => u.email === sessionEmail);
-    if (!user) return;
-    const submission = {
-      id: `sub_${Date.now()}`,
-      email: user.email,
-      name: user.name,
-      regNo: user.regNo,
-      description,
-      driveLink,
-      submittedAt: new Date().toISOString().slice(0, 10),
-      status: "pending",
-      awardedPoints: null,
-    };
-    const newPending = [...(pending || []), submission];
-    setPending(newPending);
-    await savePending(newPending);
+  async function handleSubmitContribution(payload) {
+    try {
+      await apiCall("/submissions", "POST", payload);
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Approve contribution (admin / super_admin) ── */
   async function handleApproveContribution(submissionId, title, points) {
-    const sub = pending.find((p) => p.id === submissionId);
-    if (!sub) return;
-    const reviewer = users ? users.find((u) => u.email === sessionEmail) : null;
-    const reviewerName = reviewer ? reviewer.name : "Staff";
-
-    const newUsers = users.map((u) =>
-      u.email === sub.email
-        ? { ...u, points: u.points + points, contributions: [...u.contributions, { title, points, date: new Date().toISOString().slice(0, 10) }] }
-        : u
-    );
-    setUsers(newUsers);
-    await saveUsers(newUsers);
-
-    // Mark submission as approved with reviewer info
-    const newPending = pending.map((p) =>
-      p.id === submissionId
-        ? {
-            ...p,
-            status: "approved",
-            awardedPoints: points,
-            reviewedBy: reviewerName,
-            reviewedByEmail: sessionEmail,
-            reviewedAt: new Date().toISOString().slice(0, 10),
-          }
-        : p
-    );
-    setPending(newPending);
-    await savePending(newPending);
-
-    // Log activity
-    logActivityEntry({
-      type: "points_awarded",
-      targetEmail: sub.email,
-      targetName: sub.name,
-      title,
-      points,
-    });
+    try {
+      await apiCall(`/submissions/${submissionId}/approve`, "POST", { title, points });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Reject contribution ── */
   async function handleRejectContribution(submissionId) {
-    const reviewer = users ? users.find((u) => u.email === sessionEmail) : null;
-    const reviewerName = reviewer ? reviewer.name : "Staff";
-
-    const newPending = pending.map((p) =>
-      p.id === submissionId
-        ? {
-            ...p,
-            status: "rejected",
-            reviewedBy: reviewerName,
-            reviewedByEmail: sessionEmail,
-            reviewedAt: new Date().toISOString().slice(0, 10),
-          }
-        : p
-    );
-    setPending(newPending);
-    await savePending(newPending);
+    try {
+      await apiCall(`/submissions/${submissionId}/reject`, "POST");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Promote / demote user ── */
   async function handlePromoteUser(email, newRole) {
-    const targetUser = users ? users.find((u) => u.email === email) : null;
-    const newUsers = users.map((u) => u.email === email ? { ...u, role: newRole } : u);
-    setUsers(newUsers);
-    await saveUsers(newUsers);
-
-    // Log activity
-    logActivityEntry({
-      type: "role_change",
-      targetEmail: email,
-      targetName: targetUser ? targetUser.name : email,
-      newRole,
-    });
+    try {
+      await apiCall("/users/promote", "POST", { email, newRole });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Toggle Leaderboard Exclusion (super_admin) ── */
   async function handleToggleLeaderboardExclusion(email) {
-    const newUsers = users.map((u) => (u.email === email ? { ...u, excluded: !u.excluded } : u));
-    setUsers(newUsers);
-    await saveUsers(newUsers);
+    try {
+      await apiCall("/users/toggle-exclusion", "POST", { email });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Direct task points assignment ── */
   async function handleAssignDirectPoints(email, title, points) {
-    const targetUser = users ? users.find((u) => u.email === email) : null;
-    if (!targetUser) return;
-    const newUsers = users.map((u) =>
-      u.email === email
-        ? {
-            ...u,
-            points: u.points + points,
-            contributions: [
-              ...u.contributions,
-              { title, points, date: new Date().toISOString().slice(0, 10) },
-            ],
-          }
-        : u
-    );
-    setUsers(newUsers);
-    await saveUsers(newUsers);
-
-    logActivityEntry({
-      type: "points_awarded",
-      targetEmail: email,
-      targetName: targetUser.name,
-      title,
-      points,
-    });
+    try {
+      await apiCall("/users/assign-points", "POST", { email, title, points });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Update user department selection ── */
   async function handleUpdateUserDepartments(email, departments) {
-    const targetUser = users ? users.find((u) => u.email === email) : null;
-    if (!targetUser) return;
-    const newUsers = users.map((u) =>
-      u.email === email ? { ...u, departments, locked: true } : u
-    );
-    setUsers(newUsers);
-    await saveUsers(newUsers);
-
-    logActivityEntry({
-      type: "dept_change",
-      targetEmail: email,
-      targetName: targetUser.name,
-      departments,
-    });
+    try {
+      await apiCall("/users/manage-departments", "POST", { email, departments });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Project CRUD ── */
   async function handleAddProject(project) {
-    const newProjects = [...projects, project];
-    setProjects(newProjects);
-    await saveProjects(newProjects);
+    try {
+      await apiCall("/projects", "POST", project);
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   async function handleEditProject(updated) {
-    const newProjects = projects.map((p) => p.id === updated.id ? updated : p);
-    setProjects(newProjects);
-    await saveProjects(newProjects);
+    try {
+      await apiCall(`/projects/${updated.id}`, "PUT", updated);
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   async function handleDeleteProject(projectId) {
-    const newProjects = projects.filter((p) => p.id !== projectId);
-    setProjects(newProjects);
-    await saveProjects(newProjects);
+    try {
+      if (window.confirm("Are you sure you want to delete this project?")) {
+        await apiCall(`/projects/${projectId}`, "DELETE");
+        await refreshData();
+      }
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   /* ── Loading ── */
@@ -370,4 +309,3 @@ export default function App() {
     </div>
   );
 }
-
