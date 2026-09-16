@@ -51,7 +51,7 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
       }}
     >
       <div className="cg-shell-bar">
-        <img src="/logo.png" alt={BRAND} style={{ height: 40, width: "auto", display: "block" }} />
+        <span className="cg-logo-nav">Cyscom</span>
 
         <button
           className={`cg-hamburger ${menuOpen ? "open" : ""}`}

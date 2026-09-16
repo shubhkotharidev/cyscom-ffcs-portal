@@ -1,7 +1,7 @@
 export default function GlobalStyle() {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Peralta&display=swap');
 
       .cg-root {
         --bg: #000000;
@@ -798,6 +798,24 @@ export default function GlobalStyle() {
         height: 70px;
         z-index: 10;
         object-fit: contain;
+      }
+      .cg-logo-hero {
+        font-family: 'Peralta', serif;
+        font-size: clamp(52px, 10vw, 96px);
+        color: var(--accent);
+        letter-spacing: 0.04em;
+        line-height: 1;
+        text-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
+        user-select: none;
+      }
+      .cg-logo-nav {
+        font-family: 'Peralta', serif;
+        font-size: 22px;
+        color: var(--accent);
+        letter-spacing: 0.03em;
+        line-height: 1;
+        user-select: none;
+        white-space: nowrap;
       }
 
       @keyframes spin1 {
