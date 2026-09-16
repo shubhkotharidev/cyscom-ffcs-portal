@@ -122,9 +122,26 @@ router.post('/staff-login', authRateLimiter, (req, res) => {
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     const userRes = await db.query('SELECT * FROM users WHERE email = $1', [req.user.email]);
+    
+    // If user is not in the database (e.g., hardcoded staff admin/superadmin via .env)
     if (userRes.rows.length === 0) {
+      if (['admin', 'super_admin'].includes(req.user.role)) {
+        return res.json({
+          user: {
+            id: req.user.id || 'staff',
+            email: req.user.email,
+            name: req.user.name,
+            regNo: req.user.regNo || 'STAFF',
+            role: req.user.role,
+            points: 0,
+            locked: true,
+            departments: [],
+          },
+        });
+      }
       return res.status(404).json({ error: 'User not found.' });
     }
+
     const user = userRes.rows[0];
     return res.json({
       user: {
