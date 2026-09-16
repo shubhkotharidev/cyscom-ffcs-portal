@@ -1,57 +1,98 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BRAND } from "../lib/constants";
 
-function guessName(email) {
-  const local = email.split("@")[0];
-  const parts = local.split(/[._]/).filter(Boolean);
-  return parts
-    .map((p) => p.replace(/[0-9]+$/, ""))
-    .filter(Boolean)
-    .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-    .join(" ");
-}
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-function GoogleG() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 48 48">
-      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 44c5.5 0 10.5-2.1 14.3-5.6l-6.6-5.6C29.6 34.7 26.9 36 24 36c-5.3 0-9.7-3.3-11.3-7.9l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/>
-      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.4l6.6 5.6C41.9 35.9 44 30.4 44 24c0-1.3-.1-2.7-.4-3.5z"/>
-    </svg>
-  );
+// Decode a Google JWT credential (id_token) without a library
+function parseJwt(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
 }
 
 export default function Login({ onLogin, error }) {
   const [step, setStep] = useState("gate"); // gate -> details -> staff
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [googleUser, setGoogleUser] = useState(null); // { email, name }
   const [regNo, setRegNo] = useState("");
   const [staffUsername, setStaffUsername] = useState("");
   const [staffPassword, setStaffPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const googleBtnRef = useRef(null);
 
-  const emailValid = /^[a-zA-Z0-9._%+-]+@vitstudent\.ac\.in$/i.test(email.trim());
+  // Initialise Google Identity Services once the GSI script is ready
+  useEffect(() => {
+    if (step !== "gate") return;
 
-  function handleContinue(e) {
-    e.preventDefault();
-    if (!emailValid) {
-      setLocalError("Only @vitstudent.ac.in addresses can access this portal.");
+    function initGsi() {
+      if (!window.google || !GOOGLE_CLIENT_ID) return;
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      });
+      if (googleBtnRef.current) {
+        window.google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: "filled_blue",
+          size: "large",
+          width: 336,
+          text: "continue_with",
+          shape: "rectangular",
+          logo_alignment: "left",
+        });
+      }
+    }
+
+    // GSI script might still be loading — poll briefly
+    if (window.google) {
+      initGsi();
+    } else {
+      const interval = setInterval(() => {
+        if (window.google) {
+          clearInterval(interval);
+          initGsi();
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [step]);
+
+  function handleGoogleCredential(response) {
+    setLocalError("");
+    const payload = parseJwt(response.credential);
+    if (!payload) {
+      setLocalError("Failed to read Google credentials. Please try again.");
       return;
     }
-    setLocalError("");
-    setName(guessName(email.trim()));
+
+    const email = (payload.email || "").toLowerCase();
+    const name = payload.name || email.split("@")[0];
+
+    // Enforce VIT domain
+    if (!email.endsWith("@vitstudent.ac.in") && !email.endsWith("@vit.ac.in")) {
+      setLocalError("Access restricted to @vitstudent.ac.in / @vit.ac.in accounts only.");
+      return;
+    }
+
+    setGoogleUser({ email, name });
     setStep("details");
   }
 
   function handleFinish(e) {
     e.preventDefault();
-    if (!name.trim() || !regNo.trim()) {
-      setLocalError("Name and registration number are required.");
+    if (!regNo.trim()) {
+      setLocalError("Registration number is required.");
       return;
     }
     setLocalError("");
-    onLogin({ email: email.trim().toLowerCase(), name: name.trim(), regNo: regNo.trim().toUpperCase() });
+    onLogin({
+      email: googleUser.email,
+      name: googleUser.name,
+      regNo: regNo.trim().toUpperCase(),
+    });
   }
 
   async function handleStaffLogin(e) {
@@ -77,50 +118,56 @@ export default function Login({ onLogin, error }) {
         onLogin(data.user);
         return;
       }
-      setLocalError(data.error || "Invalid admin username or password.");
+      setLocalError(data.error || "Invalid staff username or password.");
     } catch {
       setLocalError("Cannot connect to server. Please ensure the backend is running.");
     }
   }
 
   return (
-    <div 
-      className="cg-fade-in" 
-      style={{ 
-        minHeight: "100vh", 
-        display: "flex", 
+    <div
+      className="cg-fade-in"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
         flexDirection: "column",
-        alignItems: "center", 
-        position: "relative", 
-        zIndex: 3, 
-        padding: 20 
+        alignItems: "center",
+        position: "relative",
+        zIndex: 3,
+        padding: 20,
       }}
     >
-      {/* Main Login Panel Wrapper */}
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
         <div className="cg-panel" style={{ width: 400, maxWidth: "100%", padding: 32 }}>
           <div className="cg-display" style={{ fontSize: 26, fontWeight: 600, margin: "10px 0 24px" }}>
-            {step === "gate" ? "Student Login" : step === "details" ? "Confirm profile" : "Staff Portal Login"}
+            {step === "gate" ? "Member Login" : step === "details" ? "One last step" : "Staff Portal Login"}
           </div>
 
+          {/* ── Step 1: Google Sign-In ── */}
           {step === "gate" && (
-            <form onSubmit={handleContinue}>
-              <div className="cg-label" style={{ marginBottom: 6 }}>VIT STUDENT EMAIL</div>
-              <input
-                className="cg-input"
-                placeholder="student@vitstudent.ac.in"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoFocus
-              />
-              {(localError || error) && (
-                <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 10 }}>{localError || error}</div>
+            <div>
+              <div className="cg-label" style={{ marginBottom: 14 }}>
+                SIGN IN WITH YOUR VIT GOOGLE ACCOUNT
+              </div>
+
+              {/* Google renders its own button into this div */}
+              <div ref={googleBtnRef} style={{ display: "flex", justifyContent: "center", minHeight: 44 }} />
+
+              {!GOOGLE_CLIENT_ID && (
+                <div style={{ color: "var(--warn)", fontSize: 11, marginTop: 10, textAlign: "center" }}>
+                  ⚠ VITE_GOOGLE_CLIENT_ID is not configured.
+                </div>
               )}
-              <button type="submit" className="cg-btn cg-btn-solid" style={{ width: "100%", marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                <GoogleG /> Continue with Google
-              </button>
-              <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 14, lineHeight: 1.5 }}>
-                Access is restricted to <span style={{ color: "var(--accent-2)" }}>@vitstudent.ac.in</span> accounts.
+
+              {(localError || error) && (
+                <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 12, textAlign: "center" }}>
+                  {localError || error}
+                </div>
+              )}
+
+              <div style={{ fontSize: 11, color: "var(--text-dim)", marginTop: 16, lineHeight: 1.5, textAlign: "center" }}>
+                Access restricted to{" "}
+                <span style={{ color: "var(--accent-2)" }}>@vitstudent.ac.in</span> accounts.
               </div>
 
               <div style={{ borderTop: "1px solid var(--border)", marginTop: 24, paddingTop: 18, textAlign: "center" }}>
@@ -130,23 +177,36 @@ export default function Login({ onLogin, error }) {
                   style={{ width: "100%", fontSize: 11 }}
                   onClick={() => { setLocalError(""); setStep("staff"); }}
                 >
-                  ADMIN PORTAL LOGIN →
+                  STAFF / ADMIN PORTAL LOGIN →
                 </button>
               </div>
-            </form>
+            </div>
           )}
 
-          {step === "details" && (
+          {/* ── Step 2: Confirm reg number (name + email come from Google) ── */}
+          {step === "details" && googleUser && (
             <form onSubmit={handleFinish}>
+              <div style={{ marginBottom: 18, padding: "12px 14px", background: "var(--bg)", border: "1px solid var(--border)", fontSize: 12 }}>
+                <div style={{ color: "var(--text-dim)", fontSize: 10, letterSpacing: "0.1em", marginBottom: 4 }}>SIGNED IN AS</div>
+                <div style={{ fontWeight: 600 }}>{googleUser.name}</div>
+                <div style={{ color: "var(--accent-2)", fontSize: 11 }}>{googleUser.email}</div>
+              </div>
+
               <div style={{ marginBottom: 14 }}>
-                <div className="cg-label" style={{ marginBottom: 6 }}>FULL NAME</div>
-                <input className="cg-input" value={name} onChange={(e) => setName(e.target.value)} autoFocus />
-              </div>
-              <div style={{ marginBottom: 6 }}>
                 <div className="cg-label" style={{ marginBottom: 6 }}>REGISTRATION NUMBER</div>
-                <input className="cg-input" placeholder="23BCE1234" value={regNo} onChange={(e) => setRegNo(e.target.value)} />
+                <input
+                  className="cg-input"
+                  placeholder="23BCE1234"
+                  value={regNo}
+                  onChange={(e) => setRegNo(e.target.value)}
+                  autoFocus
+                />
               </div>
-              {localError && <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 10 }}>{localError}</div>}
+
+              {localError && (
+                <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 10 }}>{localError}</div>
+              )}
+
               <button type="submit" className="cg-btn cg-btn-solid" style={{ width: "100%", marginTop: 20 }}>
                 ENTER DASHBOARD →
               </button>
@@ -154,23 +214,25 @@ export default function Login({ onLogin, error }) {
                 type="button"
                 className="cg-btn cg-btn-sm"
                 style={{ width: "100%", marginTop: 10 }}
-                onClick={() => setStep("gate")}
+                onClick={() => { setStep("gate"); setGoogleUser(null); setRegNo(""); setLocalError(""); }}
               >
-                ← BACK TO EMAIL
+                ← BACK
               </button>
             </form>
           )}
 
+          {/* ── Step 3: Staff login ── */}
           {step === "staff" && (
             <form onSubmit={handleStaffLogin}>
               <div style={{ marginBottom: 14 }}>
-                <div className="cg-label" style={{ marginBottom: 6 }}>USERNAME</div>
+                <div className="cg-label" style={{ marginBottom: 6 }}>STAFF USERNAME</div>
                 <input
                   className="cg-input"
-                  placeholder="username"
+                  placeholder="Enter username"
                   value={staffUsername}
                   onChange={(e) => setStaffUsername(e.target.value)}
                   autoFocus
+                  autoComplete="username"
                 />
               </div>
               <div style={{ marginBottom: 10 }}>
@@ -181,13 +243,16 @@ export default function Login({ onLogin, error }) {
                   placeholder="••••••••••••"
                   value={staffPassword}
                   onChange={(e) => setStaffPassword(e.target.value)}
+                  autoComplete="current-password"
                 />
               </div>
 
-              {localError && <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 10 }}>{localError}</div>}
+              {localError && (
+                <div style={{ color: "var(--danger)", fontSize: 12, marginTop: 10 }}>{localError}</div>
+              )}
 
               <button type="submit" className="cg-btn cg-btn-super" style={{ width: "100%", marginTop: 18 }}>
-                LOGIN TO ADMIN PANEL →
+                LOGIN TO STAFF PANEL →
               </button>
 
               <button
@@ -196,8 +261,13 @@ export default function Login({ onLogin, error }) {
                 style={{ width: "100%", marginTop: 10 }}
                 onClick={() => { setLocalError(""); setStep("gate"); }}
               >
-                ← BACK TO STUDENT LOGIN
+                ← BACK TO MEMBER LOGIN
               </button>
+
+              <div style={{ marginTop: 20, padding: "10px 12px", background: "var(--bg)", border: "1px solid var(--border)", fontSize: 10.5, color: "var(--text-dim)", lineHeight: 1.6, textAlign: "center" }}>
+                🔒 <strong>Secured Staff Authentication</strong><br />
+                Credentials managed via root <code style={{ color: "var(--accent)" }}>.env</code> file.
+              </div>
             </form>
           )}
         </div>
