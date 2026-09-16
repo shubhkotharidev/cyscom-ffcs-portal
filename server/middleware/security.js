@@ -22,12 +22,15 @@ const configureHelmet = () => helmet({
 const configureCors = () => {
   const allowedOrigins = [
     process.env.CLIENT_URL || 'http://localhost:5173',
+    'https://cyscom-ffcs-portal.vercel.app',
+    'http://cyscom-ffcs-portal.vercel.app',
     'http://localhost:3000',
     'http://localhost:4173',
+    'http://localhost:5173',
   ];
   return cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl)
+      // Allow requests with no origin (Vercel serverless functions, curl, etc.)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {

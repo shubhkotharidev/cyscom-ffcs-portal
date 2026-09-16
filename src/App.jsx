@@ -119,9 +119,10 @@ export default function App() {
   function handleLogout() {
     localStorage.removeItem("club:jwt");
     setSessionEmail(null);
-    setUsers(null);
-    setProjects(null);
-    setPending(null);
+    setSessionUserFallback(null);
+    setUsers([]);
+    setProjects([]);
+    setPending([]);
     setPhase("landing");
     setTab("dashboard");
   }

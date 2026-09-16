@@ -23,7 +23,7 @@ router.get('/', authenticateToken, async (req, res) => {
         return {
           ...u,
           departments: u.departments || [],
-          contributions: contribs.rows,
+          contributions: contribs.rows || [],
         };
       })
     );
