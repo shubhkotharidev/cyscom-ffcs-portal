@@ -158,7 +158,7 @@ export default function Login({ onLogin, error }) {
       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
         <div className="cg-panel" style={{ width: 400, maxWidth: "100%", padding: 32 }}>
           <div className="cg-display" style={{ fontSize: 26, fontWeight: 600, margin: "10px 0 24px" }}>
-            {step === "gate" ? "Member Login" : step === "details" ? "One last step" : "Staff Portal Login"}
+            {step === "gate" ? "Member Login" : step === "details" ? "One last step" : "Admin Portal Login"}
           </div>
 
           {/* ── Step 1: Google Sign-In ── */}
