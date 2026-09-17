@@ -69,46 +69,7 @@ export function PixelTransition({ onDone }) {
 /* Terminal prompt — type /enter to proceed                               */
 /* ---------------------------------------------------------------------- */
 
-function TerminalPrompt({ onEnter }) {
-  const [cmd, setCmd] = useState("");
-  const [state, setState] = useState("idle"); // idle | focused | error
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (cmd.trim().toLowerCase() === "/enter") {
-      onEnter();
-    } else {
-      setState("error");
-      setCmd("");
-      setTimeout(() => setState("focused"), 400);
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className={`cg-terminal-shell ${state}`}>
-      <span className="cg-corner tl" />
-      <span className="cg-corner tr" />
-      <span className="cg-corner bl" />
-      <span className="cg-corner br" />
-      <span className="cg-terminal-prompt">&gt;</span>
-      <input
-        className="cg-terminal-input"
-        type="text"
-        value={cmd}
-        onChange={(e) => setCmd(e.target.value)}
-        onFocus={() => setState("focused")}
-        onBlur={() => setState((s) => (s === "error" ? s : "idle"))}
-        placeholder="/enter"
-        size={Math.max(cmd.length, 6)}
-        autoFocus
-        spellCheck={false}
-        autoComplete="off"
-      />
-    </form>
-  );
-}
-
-/* ---------------------------------------------------------------------- */
 /* Landing                                                                */
 /* ---------------------------------------------------------------------- */
 
@@ -146,8 +107,9 @@ export default function Landing({ onEnter }) {
         <div className="cg-label" style={{ marginTop: 14, marginBottom: 46, textAlign: "center" }}>
           {SUBTITLE}
         </div>
-
-        <TerminalPrompt onEnter={onEnter} />
+        <button className="cg-btn cg-btn-solid" onClick={onEnter} style={{ fontSize: 13, padding: "12px 32px", letterSpacing: "0.15em" }}>
+          ENTER PORTAL
+        </button>
       </div>
     </div>
   );
