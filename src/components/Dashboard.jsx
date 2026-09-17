@@ -19,7 +19,17 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
   const [submitMsg, setSubmitMsg] = useState("");
 
   // Pending submissions for this user
-  const myPending = (pending || []).filter((p) => p.email === user.email);
+  const myPending = (pending || []).filter((p) => p.email === user.email && p.status === "pending");
+
+  const myRejected = (pending || []).filter((p) => p.email === user.email && p.status === "rejected");
+  const rejectedLogs = myRejected.map(r => ({
+    title: r.description,
+    date: r.reviewedAt || r.submittedAt,
+    points: 0,
+    isRejected: true
+  }));
+
+  const combinedLogs = [...(user.contributions || []), ...rejectedLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   function handleLogContribution(e) {
     e.preventDefault();
@@ -138,17 +148,19 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
 
       {/* Approved Contribution Log */}
       <div className="cg-label" style={{ marginBottom: 10 }}>CONTRIBUTION LOG</div>
-      <div className="cg-panel" style={{ padding: user.contributions.length ? 0 : 18 }}>
-        {user.contributions.length === 0 && (
-          <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>No approved contributions yet. Points are awarded by admins after reviewing your submissions.</div>
+      <div className="cg-panel" style={{ padding: combinedLogs.length ? 0 : 18 }}>
+        {combinedLogs.length === 0 && (
+          <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>No reviewed contributions yet. Points are awarded by admins after reviewing your submissions.</div>
         )}
-        {user.contributions.map((c, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", borderBottom: i < user.contributions.length - 1 ? "1px solid var(--border)" : "none" }}>
+        {combinedLogs.map((c, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", borderBottom: i < combinedLogs.length - 1 ? "1px solid var(--border)" : "none" }}>
             <div>
               <div style={{ fontSize: 13 }}>{c.title}</div>
               <div style={{ fontSize: 10.5, color: "var(--text-dim)", marginTop: 2 }}>{c.date}</div>
             </div>
-            <div style={{ color: "var(--accent)", fontSize: 13, fontWeight: 600 }}>+{c.points}</div>
+            <div style={{ color: c.isRejected ? "var(--danger)" : "var(--accent)", fontSize: 13, fontWeight: 600 }}>
+              {c.isRejected ? "Rejected" : `+${c.points}`}
+            </div>
           </div>
         ))}
       </div>
