@@ -101,17 +101,15 @@ export default function Departments({ user, onLock }) {
                 {d.name.toUpperCase()}
               </div>
 
-              {/* Description — only show when selected */}
-              {isSel && (
-                <div style={{
-                  fontSize: 9.5,
-                  color: "var(--text-dim)",
-                  lineHeight: 1.5,
-                  marginTop: 2,
-                }}>
-                  {d.desc}
-                </div>
-              )}
+              {/* Description — always visible */}
+              <div style={{
+                fontSize: 9.5,
+                color: "var(--text-dim)",
+                lineHeight: 1.5,
+                marginTop: 2,
+              }}>
+                {d.desc}
+              </div>
             </div>
           );
         })}
