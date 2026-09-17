@@ -17,6 +17,7 @@ export default function App() {
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [pending, setPending] = useState([]);
+  const [projectRequests, setProjectRequests] = useState([]);
   const [sessionEmail, setSessionEmail] = useState(null);
   const [sessionUserFallback, setSessionUserFallback] = useState(null);
   const [loginError, setLoginError] = useState("");
@@ -39,14 +40,16 @@ export default function App() {
 
   const refreshData = useCallback(async () => {
     try {
-      const [u, p, s] = await Promise.all([
+      const [u, p, s, pr] = await Promise.all([
         apiCall("/users"),
         apiCall("/projects"),
         apiCall("/submissions"),
+        apiCall("/projects/requests").catch(() => []),
       ]);
       setUsers(u);
       setProjects(p);
       setPending(s);
+      setProjectRequests(pr);
     } catch (err) {
       console.error("Failed to load data:", err);
     }
@@ -123,6 +126,7 @@ export default function App() {
     setUsers([]);
     setProjects([]);
     setPending([]);
+    setProjectRequests([]);
     setPhase("landing");
     setTab("dashboard");
   }
@@ -137,7 +141,37 @@ export default function App() {
     }
   }
 
-  /* ── Project application ── */
+  /* ── Project join request (member) ── */
+  async function handleRequestJoin(projectId) {
+    try {
+      await apiCall(`/projects/${projectId}/request`, "POST");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  /* ── Approve project request (admin / super_admin) ── */
+  async function handleApproveRequest(reqId) {
+    try {
+      await apiCall(`/projects/requests/${reqId}/approve`, "POST");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  /* ── Reject project request (admin / super_admin) ── */
+  async function handleRejectRequest(reqId) {
+    try {
+      await apiCall(`/projects/requests/${reqId}/reject`, "POST");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  /* ── Project application (kept for legacy compat) ── */
   async function handleApply(projectId) {
     try {
       await apiCall(`/projects/${projectId}/apply`, "POST");
@@ -277,13 +311,14 @@ export default function App() {
               />
             )}
             {tab === "departments" && <Departments user={currentUser} onLock={handleLockDepartments} />}
-            {tab === "projects" && <Projects user={currentUser} projects={projects} onApply={handleApply} />}
+            {tab === "projects" && <Projects user={currentUser} projects={projects} projectRequests={projectRequests} onRequest={handleRequestJoin} />}
             {tab === "leaderboard" && <Leaderboard users={users} currentEmail={sessionEmail} />}
             {tab === "superadmin" && currentUser.role === "super_admin" && (
               <SuperAdmin
                 users={users}
                 projects={projects}
                 pending={pending || []}
+                projectRequests={projectRequests || []}
                 currentEmail={sessionEmail}
                 onApprove={handleApproveContribution}
                 onReject={handleRejectContribution}
@@ -294,6 +329,8 @@ export default function App() {
                 onDeleteProject={handleDeleteProject}
                 onAssignPoints={handleAssignDirectPoints}
                 onUpdateDepartments={handleUpdateUserDepartments}
+                onApproveRequest={handleApproveRequest}
+                onRejectRequest={handleRejectRequest}
               />
             )}
             {tab === "admin" && currentUser.role === "admin" && (
@@ -301,11 +338,14 @@ export default function App() {
                 users={users}
                 projects={projects || []}
                 pending={pending || []}
+                projectRequests={projectRequests || []}
                 currentEmail={sessionEmail}
                 onApprove={handleApproveContribution}
                 onReject={handleRejectContribution}
                 onAssignPoints={handleAssignDirectPoints}
                 onUpdateDepartments={handleUpdateUserDepartments}
+                onApproveRequest={handleApproveRequest}
+                onRejectRequest={handleRejectRequest}
               />
             )}
           </Shell>
