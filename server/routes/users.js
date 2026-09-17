@@ -100,22 +100,6 @@ router.post('/assign-points', authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/users/promote (Super Admin promote / demote user role)
-router.post('/promote', authenticateToken, requireSuperAdmin, async (req, res) => {
-  try {
-    const { email, newRole } = req.body;
-    if (!email || !['member', 'admin', 'super_admin'].includes(newRole)) {
-      return res.status(400).json({ error: 'Invalid email or role specified.' });
-    }
-
-    await db.query(`UPDATE users SET role = $1 WHERE email = $2`, [newRole, email]);
-
-    return res.json({ success: true, role: newRole });
-  } catch (err) {
-    console.error('Promote user error:', err);
-    return res.status(500).json({ error: 'Failed to update user role.' });
-  }
-});
 
 // POST /api/users/toggle-exclusion (Super Admin toggle Leaderboard exclusion)
 router.post('/toggle-exclusion', authenticateToken, requireSuperAdmin, async (req, res) => {

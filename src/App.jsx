@@ -211,16 +211,6 @@ export default function App() {
     }
   }
 
-  /* ── Promote / demote user ── */
-  async function handlePromoteUser(email, newRole) {
-    try {
-      await apiCall("/users/promote", "POST", { email, newRole });
-      await refreshData();
-    } catch (err) {
-      alert(err.message);
-    }
-  }
-
   /* ── Toggle Leaderboard Exclusion (super_admin) ── */
   async function handleToggleLeaderboardExclusion(email) {
     try {
@@ -322,7 +312,6 @@ export default function App() {
                 currentEmail={sessionEmail}
                 onApprove={handleApproveContribution}
                 onReject={handleRejectContribution}
-                onPromote={handlePromoteUser}
                 onToggleExclusion={handleToggleLeaderboardExclusion}
                 onAddProject={handleAddProject}
                 onEditProject={handleEditProject}

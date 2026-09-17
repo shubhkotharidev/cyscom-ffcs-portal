@@ -364,7 +364,7 @@ function ProjectsTab({ projects, onAdd, onEdit, onDelete, isSuperAdmin }) {
 /* Users & Departments Tab                                                */
 /* ══════════════════════════════════════════════════════════════════════ */
 
-function UserRow({ user, currentEmail, isSuperAdmin, onPromote, onToggleExclusion, onOpenAssignPoints, onOpenManageDepts, expanded, onToggle }) {
+function UserRow({ user, currentEmail, isSuperAdmin, onToggleExclusion, onOpenAssignPoints, onOpenManageDepts, expanded, onToggle }) {
   const isSelf = user.email === currentEmail;
 
   return (
@@ -444,7 +444,7 @@ function UserRow({ user, currentEmail, isSuperAdmin, onPromote, onToggleExclusio
   );
 }
 
-function UsersTab({ users, currentEmail, isSuperAdmin, onPromote, onToggleExclusion, onAssignPoints, onUpdateDepartments }) {
+function UsersTab({ users, currentEmail, isSuperAdmin, onToggleExclusion, onAssignPoints, onUpdateDepartments }) {
   const [query, setQuery] = useState("");
   const [expandedEmail, setExpandedEmail] = useState(null);
   const [assignUser, setAssignUser] = useState(null);
@@ -480,7 +480,6 @@ function UsersTab({ users, currentEmail, isSuperAdmin, onPromote, onToggleExclus
               user={u}
               currentEmail={currentEmail}
               isSuperAdmin={isSuperAdmin}
-              onPromote={onPromote}
               onToggleExclusion={onToggleExclusion}
               onOpenAssignPoints={(userObj) => setAssignUser(userObj)}
               onOpenManageDepts={(userObj) => setManageDeptUser(userObj)}
@@ -702,7 +701,6 @@ export default function SuperAdmin({
   currentEmail,
   onApprove,
   onReject,
-  onPromote,
   onToggleExclusion,
   onAddProject,
   onEditProject,
@@ -772,7 +770,6 @@ export default function SuperAdmin({
           users={users}
           currentEmail={currentEmail}
           isSuperAdmin={true}
-          onPromote={onPromote}
           onToggleExclusion={onToggleExclusion}
           onAssignPoints={onAssignPoints}
           onUpdateDepartments={onUpdateDepartments}
