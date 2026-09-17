@@ -75,7 +75,7 @@ export default function Departments({ user, users = [], onLock }) {
                 background: isSel ? "var(--accent-soft)" : "var(--bg-panel)",
                 borderRadius: 2,
                 cursor: (user.locked || (!isSel && isFull)) ? "default" : "pointer",
-                opacity: (user.locked && !isSel) || (!isSel && isFull) ? 0.4 : 1,
+                opacity: (user.locked && !isSel) || (!isSel && isFull) ? 0.6 : 1,
                 textAlign: "center",
                 transition: "border-color 0.18s, background 0.18s, opacity 0.18s",
                 userSelect: "none",
@@ -136,7 +136,7 @@ export default function Departments({ user, users = [], onLock }) {
                 border: `1px solid ${isFull ? "var(--danger)" : "var(--accent-2)"}`,
                 borderRadius: 10,
               }}>
-                {currentCount} / {limit} SEATS
+                {isFull ? "FULL (0 SEATS)" : `${Math.max(0, limit - currentCount)} SEATS AVAILABLE`}
               </div>
             </div>
           );
