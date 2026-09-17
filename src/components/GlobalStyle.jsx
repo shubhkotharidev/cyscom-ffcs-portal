@@ -845,10 +845,10 @@ export default function GlobalStyle() {
         opacity: 0.25;
       }
       .landing-dyson-bg .dyson-logo {
-        width: 20vmin;
-        height: 20vmin;
-        max-width: 150px;
-        max-height: 150px;
+        width: 45vmin;
+        height: 45vmin;
+        max-width: 350px;
+        max-height: 350px;
         opacity: 0.5;
       }
       .landing-glass-card {
