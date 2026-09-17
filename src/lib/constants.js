@@ -1,4 +1,4 @@
-export const BRAND = "Cyscom";
+export const BRAND = "CYSCOM";
 export const SUBTITLE = "FFCS Portal";
 
 export const DEPARTMENTS = [
