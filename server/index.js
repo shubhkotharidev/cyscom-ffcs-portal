@@ -32,6 +32,31 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// Run once to setup project requests table on Vercel
+app.get('/api/setup-requests-table', async (req, res) => {
+  const db = require('./config/db');
+  try {
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS project_requests (
+        id VARCHAR(50) PRIMARY KEY,
+        project_id VARCHAR(50) REFERENCES projects(id) ON DELETE CASCADE,
+        user_email VARCHAR(255) NOT NULL,
+        user_name VARCHAR(100),
+        reg_no VARCHAR(20),
+        status VARCHAR(20) DEFAULT 'pending',
+        requested_at VARCHAR(30),
+        reviewed_by VARCHAR(100),
+        reviewed_at VARCHAR(30),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    res.json({ success: true, message: 'Table project_requests created or already exists' });
+  } catch (err) {
+    console.error('Setup error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
