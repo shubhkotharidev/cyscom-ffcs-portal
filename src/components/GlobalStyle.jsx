@@ -1,7 +1,7 @@
 export default function GlobalStyle() {
   return (
     <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Peralta&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
 
       .cg-root {
         --bg: #000000;
@@ -248,6 +248,14 @@ export default function GlobalStyle() {
       .cg-seat { width: 10px; height: 14px; border: 1px solid var(--border-hi); }
       .cg-seat.filled { background: var(--accent); border-color: var(--accent); }
       .cg-seat.full { background: var(--danger); border-color: var(--danger); }
+
+      /* dept cards grid — responsive                                     */
+      @media (max-width: 600px) {
+        .cg-dept-grid { grid-template-columns: repeat(3, 1fr) !important; }
+      }
+      @media (max-width: 380px) {
+        .cg-dept-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      }
 
       .cg-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
       .cg-scroll::-webkit-scrollbar-thumb { background: var(--border-hi); }
@@ -800,19 +808,20 @@ export default function GlobalStyle() {
         object-fit: contain;
       }
       .cg-logo-hero {
-        font-family: 'Peralta', serif;
-        font-size: clamp(52px, 10vw, 96px);
-        color: var(--accent);
-        letter-spacing: 0.04em;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(56px, 11vw, 104px);
+        font-weight: 300;
+        color: var(--text);
+        letter-spacing: 0.08em;
         line-height: 1;
-        text-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
         user-select: none;
       }
       .cg-logo-nav {
-        font-family: 'Peralta', serif;
-        font-size: 22px;
-        color: var(--accent);
-        letter-spacing: 0.03em;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 24px;
+        font-weight: 400;
+        color: var(--text);
+        letter-spacing: 0.06em;
         line-height: 1;
         user-select: none;
         white-space: nowrap;
