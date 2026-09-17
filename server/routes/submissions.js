@@ -78,15 +78,23 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 
-// POST /api/submissions/:id/approve (Super Admin approve & award points)
-router.post('/:id/approve', authenticateToken, requireSuperAdmin, async (req, res) => {
+// POST /api/submissions/:id/approve (Admin or Super Admin approve & award points)
+router.post('/:id/approve', authenticateToken, async (req, res) => {
   try {
+    // Allow both admin and super_admin roles
+    if (!['admin', 'super_admin'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Staff access required.' });
+    }
+
     const { id } = req.params;
     const { title, points } = req.body;
     const pts = parseInt(points, 10);
 
     if (!title || !title.trim() || !pts || pts <= 0) {
       return res.status(400).json({ error: 'Valid title and points are required.' });
+    }
+    if (pts > 500) {
+      return res.status(400).json({ error: 'Cannot award more than 500 points per submission.' });
     }
 
     const subRes = await db.query('SELECT * FROM submissions WHERE id = $1', [id]);
@@ -95,14 +103,23 @@ router.post('/:id/approve', authenticateToken, requireSuperAdmin, async (req, re
     }
 
     const sub = subRes.rows[0];
-    const reviewerName = req.user.name || 'Super Admin';
+
+    // ── Idempotency guard: prevent double-awarding points ──
+    if (sub.status === 'approved') {
+      return res.status(409).json({ error: 'This submission has already been approved. Points cannot be awarded twice.' });
+    }
+    if (sub.status === 'rejected') {
+      return res.status(409).json({ error: 'This submission has already been rejected and cannot be approved.' });
+    }
+
+    const reviewerName = req.user.name || 'Admin';
     const today = new Date().toISOString().slice(0, 10);
 
-    // 1. Update submission record
+    // 1. Update submission status (do this first to prevent race conditions)
     await db.query(
       `UPDATE submissions
        SET status = 'approved', awarded_points = $1, reviewed_by = $2, reviewed_by_email = $3, reviewed_at = $4
-       WHERE id = $5`,
+       WHERE id = $5 AND status = 'pending'`,
       [pts, reviewerName, req.user.email, today, id]
     );
 
@@ -122,17 +139,31 @@ router.post('/:id/approve', authenticateToken, requireSuperAdmin, async (req, re
   }
 });
 
-// POST /api/submissions/:id/reject (Super Admin reject contribution)
-router.post('/:id/reject', authenticateToken, requireSuperAdmin, async (req, res) => {
+// POST /api/submissions/:id/reject (Admin or Super Admin reject contribution)
+router.post('/:id/reject', authenticateToken, async (req, res) => {
   try {
+    // Allow both admin and super_admin roles
+    if (!['admin', 'super_admin'].includes(req.user.role)) {
+      return res.status(403).json({ error: 'Staff access required.' });
+    }
+
     const { id } = req.params;
-    const reviewerName = req.user.name || 'Super Admin';
+
+    const subRes = await db.query('SELECT status FROM submissions WHERE id = $1', [id]);
+    if (subRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Submission not found.' });
+    }
+    if (subRes.rows[0].status !== 'pending') {
+      return res.status(409).json({ error: 'Only pending submissions can be rejected.' });
+    }
+
+    const reviewerName = req.user.name || 'Admin';
     const today = new Date().toISOString().slice(0, 10);
 
     await db.query(
       `UPDATE submissions
        SET status = 'rejected', reviewed_by = $1, reviewed_by_email = $2, reviewed_at = $3
-       WHERE id = $4`,
+       WHERE id = $4 AND status = 'pending'`,
       [reviewerName, req.user.email, today, id]
     );
 

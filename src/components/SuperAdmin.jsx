@@ -20,11 +20,13 @@ function formatLink(url) {
 function ApproveModal({ submission, onConfirm, onClose }) {
   const [title, setTitle] = useState(submission.description || "");
   const [points, setPoints] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function submit(e) {
     e.preventDefault();
     const pts = parseInt(points, 10);
-    if (!title.trim() || !pts || pts <= 0) return;
+    if (!title.trim() || !pts || pts <= 0 || submitting) return;
+    setSubmitting(true);
     onConfirm(submission.id, title.trim(), pts);
     onClose();
   }
@@ -63,8 +65,8 @@ function ApproveModal({ submission, onConfirm, onClose }) {
               style={{ marginTop: 6 }}
             />
           </div>
-          <button type="submit" className="cg-btn cg-btn-super" disabled={!title.trim() || !points}>
-            CONFIRM & AWARD POINTS
+          <button type="submit" className="cg-btn cg-btn-super" disabled={!title.trim() || !points || submitting}>
+            {submitting ? "AWARDING…" : "CONFIRM & AWARD POINTS"}
           </button>
         </form>
       </div>
