@@ -391,23 +391,6 @@ function UserRow({ user, currentEmail, isSuperAdmin, onPromote, onToggleExclusio
         </div>
 
         <div style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)" }}>{user.points} pts</div>
-
-        <div onClick={(e) => e.stopPropagation()}>
-          {isSelf || !isSuperAdmin ? (
-            <RoleBadge role={user.role} />
-          ) : (
-            <select
-              className="cg-select"
-              style={{ fontSize: 11, padding: "5px 6px" }}
-              value={user.role}
-              onChange={(e) => onPromote(user.email, e.target.value)}
-            >
-              <option value="member">Member</option>
-              <option value="admin">Admin</option>
-              <option value="super_admin">Super Admin</option>
-            </select>
-          )}
-        </div>
       </div>
 
       {expanded && (
@@ -479,7 +462,7 @@ function UsersTab({ users, currentEmail, isSuperAdmin, onPromote, onToggleExclus
       </div>
 
       <div style={{ fontSize: 11, color: "var(--text-dim)", background: "var(--bg-panel)", border: "1px solid var(--border)", padding: "10px 14px", marginBottom: 16, borderRadius: 4 }}>
-        💡 Click any member row to assign task points, manage departments, promote roles, or <strong style={{ color: "var(--accent)" }}>toggle Leaderboard inclusion/exclusion</strong>.
+        💡 Click any member row to assign task points, manage departments, or <strong style={{ color: "var(--accent)" }}>toggle Leaderboard inclusion/exclusion</strong>.
       </div>
 
       <div className="cg-panel">
@@ -487,7 +470,6 @@ function UsersTab({ users, currentEmail, isSuperAdmin, onPromote, onToggleExclus
           <div className="cg-label">MEMBER</div>
           <div className="cg-label cg-hide-mobile">DEPARTMENTS</div>
           <div className="cg-label">POINTS</div>
-          <div className="cg-label">ROLE</div>
         </div>
         {filtered.length === 0 ? (
           <div className="cg-empty">No users match your filters.</div>

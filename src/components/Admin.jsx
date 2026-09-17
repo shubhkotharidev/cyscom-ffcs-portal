@@ -288,12 +288,6 @@ function AdminUserRow({ user, currentEmail, onOpenAssignPoints, onOpenManageDept
         </div>
 
         <div style={{ fontSize: 13, fontWeight: 600, color: "var(--accent)" }}>{user.points} pts</div>
-
-        <div>
-          <span className={`cg-badge ${user.role === "super_admin" ? "cg-badge-super" : user.role === "admin" ? "cg-badge-admin" : "cg-badge-member"}`}>
-            {user.role === "super_admin" ? "Super Admin" : user.role === "admin" ? "Admin" : "Member"}
-          </span>
-        </div>
       </div>
 
       {expanded && (
@@ -364,7 +358,6 @@ function AdminUsersTab({ users, currentEmail, onAssignPoints, onUpdateDepartment
           <div className="cg-label">MEMBER</div>
           <div className="cg-label cg-hide-mobile">DEPARTMENTS</div>
           <div className="cg-label">POINTS</div>
-          <div className="cg-label">ROLE</div>
         </div>
         {filtered.length === 0 ? (
           <div className="cg-empty">No users match your filters.</div>
