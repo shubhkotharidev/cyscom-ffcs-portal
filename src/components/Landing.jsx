@@ -120,31 +120,34 @@ export default function Landing({ onEnter }) {
         minHeight: "100vh", 
         display: "flex", 
         flexDirection: "column", 
-        alignItems: "center", 
+        alignItems: "center",
+        justifyContent: "center",
         position: "relative", 
         zIndex: 3, 
         padding: "24px" 
       }}
     >
-      {/* Main Content (flex: 1 pushes the footer down while centering this content) */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%" }}>
+      {/* Background Dyson Sphere */}
+      <div className="landing-dyson-bg">
+        <div className="dyson-container">
+          <div className="dyson-sphere">
+            <div className="dyson-ring r1"></div>
+            <div className="dyson-ring r2"></div>
+            <div className="dyson-ring r3"></div>
+            <div className="dyson-ring r4"></div>
+          </div>
+          <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
+        </div>
+      </div>
+
+      {/* Foreground Glassmorphism Card */}
+      <div className="landing-glass-card">
         <span className="cg-logo-hero">CYSCOM</span>
         <div className="cg-label" style={{ marginTop: 14, marginBottom: 46, textAlign: "center" }}>
           {SUBTITLE}
         </div>
 
         <TerminalPrompt onEnter={onEnter} />
-      </div>
-
-      {/* Dyson Sphere Animation Footer */}
-      <div className="dyson-container" style={{ margin: "20px auto 30px auto" }}>
-        <div className="dyson-sphere">
-          <div className="dyson-ring r1"></div>
-          <div className="dyson-ring r2"></div>
-          <div className="dyson-ring r3"></div>
-          <div className="dyson-ring r4"></div>
-        </div>
-        <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
       </div>
     </div>
   );

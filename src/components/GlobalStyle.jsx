@@ -826,6 +826,46 @@ export default function GlobalStyle() {
         user-select: none;
         white-space: nowrap;
       }
+      .landing-dyson-bg {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        overflow: hidden;
+      }
+      .landing-dyson-bg .dyson-container {
+        width: 80vmin;
+        height: 80vmin;
+        max-width: 700px;
+        max-height: 700px;
+        margin: 0;
+        perspective: 2000px;
+        opacity: 0.25;
+      }
+      .landing-dyson-bg .dyson-logo {
+        width: 20vmin;
+        height: 20vmin;
+        max-width: 150px;
+        max-height: 150px;
+        opacity: 0.5;
+      }
+      .landing-glass-card {
+        position: relative;
+        z-index: 10;
+        background: rgba(8, 12, 24, 0.45);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 16px;
+        padding: 48px 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      }
 
       @keyframes spin1 {
         0% { transform: rotateX(90deg) rotateY(0deg) rotateZ(0deg); }
