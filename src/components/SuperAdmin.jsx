@@ -194,7 +194,6 @@ function ProjectModal({ project, onSave, onClose }) {
   const [title, setTitle] = useState(project?.title || "");
   const [brief, setBrief] = useState(project?.brief || "");
   const [seats, setSeats] = useState(project?.seatsTotal || "");
-  const [dept, setDept] = useState(project?.dept || DEPARTMENTS[0].id);
 
   function submit(e) {
     e.preventDefault();
@@ -202,7 +201,6 @@ function ProjectModal({ project, onSave, onClose }) {
     if (!title.trim() || !brief.trim() || !s || s <= 0) return;
     onSave({
       id: project?.id || `p${Date.now()}`,
-      dept,
       title: title.trim(),
       brief: brief.trim(),
       seatsTotal: s,
@@ -236,20 +234,6 @@ function ProjectModal({ project, onSave, onClose }) {
               required
               placeholder="e.g. CTF Infra / Web Portal"
             />
-          </div>
-
-          <div className="cg-form-row">
-            <label className="cg-label" style={{ display: "block", marginBottom: 6 }}>DEPARTMENT</label>
-            <select
-              className="cg-select"
-              value={dept}
-              onChange={(e) => setDept(e.target.value)}
-              style={{ width: "100%" }}
-            >
-              {DEPARTMENTS.map((d) => (
-                <option key={d.id} value={d.id}>{d.name}</option>
-              ))}
-            </select>
           </div>
 
           <div className="cg-form-row">

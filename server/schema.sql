@@ -23,7 +23,6 @@ CREATE TABLE users (
 -- Projects Table
 CREATE TABLE projects (
   id VARCHAR(64) PRIMARY KEY,
-  dept VARCHAR(64) NOT NULL,
   title VARCHAR(255) NOT NULL,
   brief TEXT NOT NULL,
   seats_total INT NOT NULL DEFAULT 1,

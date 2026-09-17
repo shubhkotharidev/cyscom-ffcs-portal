@@ -49,8 +49,9 @@ app.get('/api/setup-requests-table', async (req, res) => {
         reviewed_at VARCHAR(30),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+      ALTER TABLE projects DROP COLUMN IF EXISTS dept;
     `);
-    res.json({ success: true, message: 'Table project_requests created or already exists' });
+    res.json({ success: true, message: 'Table project_requests created and dept column removed from projects' });
   } catch (err) {
     console.error('Setup error:', err);
     res.status(500).json({ error: err.message });

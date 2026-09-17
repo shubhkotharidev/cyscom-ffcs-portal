@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT id, dept, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants
+      `SELECT id, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants
        FROM projects
        ORDER BY created_at DESC`
     );
@@ -56,9 +56,8 @@ router.get('/requests', authenticateToken, async (req, res) => {
 // POST /api/projects (Create project - Super Admin)
 router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {
   try {
-    const { dept, title, brief, seatsTotal } = req.body;
+    const { title, brief, seatsTotal } = req.body;
     const seats = parseInt(seatsTotal, 10);
-    const cleanDept = dept ? dept.trim() : 'general';
 
     if (!title || !brief || !seats || seats <= 0) {
       return res.status(400).json({ error: 'Title, brief, and seat count are all required.' });
@@ -75,10 +74,10 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {
 
     const id = `p_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const inserted = await db.query(
-      `INSERT INTO projects (id, dept, title, brief, seats_total, seats_filled, applicants)
-       VALUES ($1, $2, $3, $4, $5, 0, '{}')
-       RETURNING id, dept, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
-      [id, cleanDept, title.trim(), brief.trim(), seats]
+      `INSERT INTO projects (id, title, brief, seats_total, seats_filled, applicants)
+       VALUES ($1, $2, $3, $4, 0, '{}')
+       RETURNING id, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
+      [id, title.trim(), brief.trim(), seats]
     );
 
     return res.json(inserted.rows[0]);
@@ -92,9 +91,8 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {
 router.put('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;
-    const { dept, title, brief, seatsTotal } = req.body;
+    const { title, brief, seatsTotal } = req.body;
     const seats = parseInt(seatsTotal, 10);
-    const cleanDept = dept ? dept.trim() : 'general';
 
     if (!title || !brief || !seats || seats <= 0) {
       return res.status(400).json({ error: 'Invalid update payload.' });
@@ -111,10 +109,10 @@ router.put('/:id', authenticateToken, requireSuperAdmin, async (req, res) => {
 
     const updated = await db.query(
       `UPDATE projects
-       SET dept = $1, title = $2, brief = $3, seats_total = $4
-       WHERE id = $5
-       RETURNING id, dept, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
-      [cleanDept, title.trim(), brief.trim(), seats, id]
+       SET title = $1, brief = $2, seats_total = $3
+       WHERE id = $4
+       RETURNING id, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
+      [title.trim(), brief.trim(), seats, id]
     );
 
     if (updated.rows.length === 0) {
