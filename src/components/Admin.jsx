@@ -454,6 +454,98 @@ function AdminProjectsTab({ projects }) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════ */
+/* Project Requests Tab (Admin)                                           */
+/* ══════════════════════════════════════════════════════════════════════ */
+
+function AdminRequestsTab({ requests, onApprove, onReject }) {
+  const [approving, setApproving] = useState(null);
+  const [filter, setFilter] = useState("pending");
+
+  const filtered = requests.filter((r) => (filter === "all" ? true : r.status === filter));
+
+  return (
+    <div>
+      <div className="cg-filter-bar cg-submission-filters">
+        {["all", "pending", "approved", "rejected"].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className="cg-btn cg-btn-sm"
+            style={filter === f ? { background: "var(--accent-super-soft)", borderColor: "var(--accent-2)", color: "var(--accent-2)" } : {}}
+          >
+            {f.toUpperCase()}
+            {f === "pending" && requests.filter((r) => r.status === "pending").length > 0 && (
+              <span style={{ marginLeft: 6, background: "var(--warn)", color: "#1a0a00", fontSize: 9, fontWeight: 700, padding: "1px 5px" }}>
+                {requests.filter((r) => r.status === "pending").length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="cg-empty">
+          No {filter === "all" ? "" : filter} project requests.
+        </div>
+      ) : (
+        filtered.map((req) => (
+          <div key={req.id} className={`cg-submission-card ${req.status}`}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{req.name}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-dim)" }}>{req.regNo}</span>
+                </div>
+                <div style={{ fontSize: 13, marginBottom: 6, wordBreak: "break-word" }}>
+                  Requested to join: <strong style={{ color: "var(--accent)" }}>{req.projectTitle}</strong>
+                </div>
+                <div style={{ fontSize: 10.5, color: "var(--text-dim)", marginTop: 6 }}>
+                  Requested {req.requestedAt}
+                  {req.status === "approved" && req.reviewedBy && (
+                    <span style={{ display: "inline-block", marginLeft: 10, color: "var(--accent)" }}>
+                      Approved by {req.reviewedBy} on {req.reviewedAt}
+                    </span>
+                  )}
+                  {req.status === "rejected" && req.reviewedBy && (
+                    <span style={{ display: "inline-block", marginLeft: 10, color: "var(--danger)" }}>
+                      Rejected by {req.reviewedBy} on {req.reviewedAt}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <span className={`cg-badge cg-badge-${req.status}`}>
+                {req.status === "pending" ? "PENDING" : req.status === "approved" ? "APPROVED" : "REJECTED"}
+              </span>
+            </div>
+            {req.status === "pending" && (
+              <div className="cg-submission-actions">
+                <button
+                  className="cg-btn cg-btn-solid cg-btn-sm"
+                  onClick={() => {
+                    setApproving(req.id);
+                    onApprove(req.id).finally(() => setApproving(null));
+                  }}
+                  disabled={approving === req.id}
+                >
+                  {approving === req.id ? "APPROVING..." : "APPROVE"}
+                </button>
+                <button
+                  className="cg-btn cg-btn-danger cg-btn-sm"
+                  onClick={() => onReject(req.id)}
+                  disabled={approving === req.id}
+                >
+                  REJECT
+                </button>
+              </div>
+            )}
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════ */
 /* Dedicated Admin Component                                             */
 /* ══════════════════════════════════════════════════════════════════════ */
 
@@ -461,18 +553,23 @@ export default function Admin({
   users,
   projects = [],
   pending,
+  projectRequests = [],
   currentEmail,
   onApprove,
   onReject,
   onAssignPoints,
   onUpdateDepartments,
+  onApproveRequest,
+  onRejectRequest,
 }) {
   const [tab, setTab] = useState("projects");
   const pendingCount = (pending || []).filter((p) => p.status === "pending").length;
+  const pendingReqCount = projectRequests.filter((r) => r.status === "pending").length;
 
   const tabs = [
     { id: "projects", label: "Projects" },
     { id: "pending", label: "Submissions" },
+    { id: "requests", label: "Project Requests" },
     { id: "users", label: "Members & Depts" },
   ];
 
@@ -502,12 +599,18 @@ export default function Admin({
                 {pendingCount}
               </span>
             )}
+            {t.id === "requests" && pendingReqCount > 0 && (
+              <span style={{ marginLeft: 8, background: "var(--warn)", color: "#1a0a00", fontSize: 9, fontWeight: 700, padding: "1px 6px", verticalAlign: "middle" }}>
+                {pendingReqCount}
+              </span>
+            )}
           </div>
         ))}
       </div>
 
       {tab === "projects" && <AdminProjectsTab projects={projects || []} />}
       {tab === "pending" && <AdminSubmissionsTab pending={pending || []} onApprove={onApprove} onReject={onReject} />}
+      {tab === "requests" && <AdminRequestsTab requests={projectRequests || []} onApprove={onApproveRequest} onReject={onRejectRequest} />}
       {tab === "users" && (
         <AdminUsersTab
           users={users}
