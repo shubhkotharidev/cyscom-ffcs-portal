@@ -76,7 +76,7 @@ export default function Projects({ user, projects, projectRequests = [], onReque
                 </div>
                 {isPending && (
                   <div style={{ fontSize: 11, color: "var(--warn)", textAlign: "center", padding: "6px 0" }}>
-                    ⏳ Awaiting admin approval
+                    Awaiting admin approval
                   </div>
                 )}
                 <button
