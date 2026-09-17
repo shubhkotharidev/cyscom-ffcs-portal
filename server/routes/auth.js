@@ -7,6 +7,20 @@ const { SUPER_ADMIN_EMAILS } = require('../../src/lib/constants');
 
 const router = express.Router();
 
+// GET /api/auth/exists?email=xxx  (no auth — used to skip regNo step for returning members)
+router.get('/exists', async (req, res) => {
+  try {
+    const email = (req.query.email || '').trim().toLowerCase();
+    if (!email) return res.status(400).json({ error: 'Email is required.' });
+
+    const result = await db.query('SELECT id FROM users WHERE email = $1', [email]);
+    return res.json({ exists: result.rows.length > 0 });
+  } catch (err) {
+    console.error('Check user exists error:', err);
+    return res.status(500).json({ error: 'Server error.' });
+  }
+});
+
 // POST /api/auth/login
 router.post('/login', authRateLimiter, async (req, res) => {
   try {

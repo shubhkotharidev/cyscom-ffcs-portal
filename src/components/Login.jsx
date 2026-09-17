@@ -20,6 +20,7 @@ export default function Login({ onLogin, error }) {
   const [staffUsername, setStaffUsername] = useState("");
   const [staffPassword, setStaffPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const [checking, setChecking] = useState(false);
   const googleBtnRef = useRef(null);
 
   // Initialise Google Identity Services once the GSI script is ready
@@ -60,7 +61,7 @@ export default function Login({ onLogin, error }) {
     }
   }, [step]);
 
-  function handleGoogleCredential(response) {
+  async function handleGoogleCredential(response) {
     setLocalError("");
     const payload = parseJwt(response.credential);
     if (!payload) {
@@ -77,6 +78,23 @@ export default function Login({ onLogin, error }) {
       return;
     }
 
+    // Check if returning member — if so, skip reg number step
+    setChecking(true);
+    try {
+      const res = await fetch(`/api/auth/exists?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (data.exists) {
+        // Returning member: log in immediately, no reg number needed
+        onLogin({ email, name });
+        return;
+      }
+    } catch {
+      // If check fails, fall through to reg number step as a safe fallback
+    } finally {
+      setChecking(false);
+    }
+
+    // New member: ask for reg number
     setGoogleUser({ email, name });
     setStep("details");
   }
@@ -151,7 +169,13 @@ export default function Login({ onLogin, error }) {
               </div>
 
               {/* Google renders its own button into this div */}
-              <div ref={googleBtnRef} style={{ display: "flex", justifyContent: "center", minHeight: 44 }} />
+              <div ref={googleBtnRef} style={{ display: "flex", justifyContent: "center", minHeight: 44, opacity: checking ? 0.4 : 1, pointerEvents: checking ? "none" : "auto", transition: "opacity 0.2s" }} />
+
+              {checking && (
+                <div style={{ textAlign: "center", fontSize: 12, color: "var(--text-dim)", marginTop: 12 }}>
+                  Signing you in<span className="cg-blink">…</span>
+                </div>
+              )}
 
               {!GOOGLE_CLIENT_ID && (
                 <div style={{ color: "var(--warn)", fontSize: 11, marginTop: 10, textAlign: "center" }}>
