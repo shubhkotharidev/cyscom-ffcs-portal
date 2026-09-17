@@ -128,7 +128,7 @@ export default function Landing({ onEnter }) {
     >
       {/* Main Content (flex: 1 pushes the footer down while centering this content) */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%" }}>
-        <span className="cg-logo-hero">Cyscom</span>
+        <span className="cg-logo-hero">CYSCOM</span>
         <div className="cg-label" style={{ marginTop: 14, marginBottom: 46, textAlign: "center" }}>
           {SUBTITLE}
         </div>
