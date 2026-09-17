@@ -43,12 +43,32 @@ router.post('/departments', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Please select exactly 2 distinct departments.' });
     }
 
-    const VALID_DEPTS = ['webdev', 'tech', 'design', 'social', 'events'];
+    const VALID_DEPTS = ['webdev', 'tech', 'design', 'social', 'events', 'outreach'];
     if (!departments.every((d) => VALID_DEPTS.includes(d))) {
       return res.status(400).json({ error: 'Invalid department selection.' });
     }
     if (departments[0] === departments[1]) {
       return res.status(400).json({ error: 'Please select 2 distinct departments.' });
+    }
+
+    // Check if user is already locked
+    const userRes = await db.query(`SELECT locked FROM users WHERE email = $1`, [req.user.email]);
+    if (userRes.rows.length > 0 && userRes.rows[0].locked) {
+      return res.status(400).json({ error: 'Your departments are already locked.' });
+    }
+
+    // Check capacity limits
+    const LIMITS = { tech: 15, webdev: 15, events: 15, design: 5, social: 5, outreach: 5 };
+    
+    for (const d of departments) {
+      const countRes = await db.query(
+        `SELECT COUNT(*) FROM users WHERE $1 = ANY(departments)`,
+        [d]
+      );
+      const currentCount = parseInt(countRes.rows[0].count, 10);
+      if (currentCount >= LIMITS[d]) {
+        return res.status(400).json({ error: `Department '${d}' has reached its capacity.` });
+      }
     }
 
     await db.query(

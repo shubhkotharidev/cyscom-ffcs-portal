@@ -7,6 +7,7 @@ export const DEPARTMENTS = [
   { id: "design", name: "Design", glyph: "◈", desc: "Brand system, posters, and visual identity across every touchpoint." },
   { id: "social", name: "Social Media", glyph: "@", desc: "Campaigns, content calendars, and community growth online." },
   { id: "events", name: "Event Management", glyph: "▣", desc: "Logistics, run-sheets, and on-ground execution for events." },
+  { id: "outreach", name: "Outreach", glyph: "⚑", desc: "Sponsorships, external relations, and expanding the club's footprint." },
 ];
 
 export const SUPER_ADMIN_EMAILS = ["admin@vitstudent.ac.in", "root@vitstudent.ac.in"];

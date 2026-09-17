@@ -300,7 +300,7 @@ export default function App() {
                 pending={pending}
               />
             )}
-            {tab === "departments" && <Departments user={currentUser} onLock={handleLockDepartments} />}
+            {tab === "departments" && <Departments user={currentUser} users={users} onLock={handleLockDepartments} />}
             {tab === "projects" && <Projects user={currentUser} projects={projects} projectRequests={projectRequests} onRequest={handleRequestJoin} />}
             {tab === "leaderboard" && <Leaderboard users={users} currentEmail={sessionEmail} />}
             {tab === "superadmin" && currentUser.role === "super_admin" && (

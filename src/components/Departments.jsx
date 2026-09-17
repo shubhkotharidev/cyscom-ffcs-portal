@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { DEPARTMENTS } from "../lib/constants";
 
-export default function Departments({ user, onLock }) {
+export default function Departments({ user, users = [], onLock }) {
   const [selected, setSelected] = useState(user.departments || []);
   const [blocked, setBlocked] = useState(false);
+
+  const LIMITS = { tech: 15, webdev: 15, events: 15, design: 5, social: 5, outreach: 5 };
 
   function toggle(id) {
     if (user.locked) return;
@@ -11,6 +13,15 @@ export default function Departments({ user, onLock }) {
       setSelected((prev) => prev.filter((x) => x !== id));
       return;
     }
+    
+    // Check if full
+    const currentCount = users.filter((u) => u.departments.includes(id)).length;
+    if (currentCount >= LIMITS[id]) {
+      setBlocked(true);
+      setTimeout(() => setBlocked(false), 350);
+      return;
+    }
+
     if (selected.length >= 2) {
       setBlocked(true);
       setTimeout(() => setBlocked(false), 350);
@@ -42,6 +53,10 @@ export default function Departments({ user, onLock }) {
         {DEPARTMENTS.map((d) => {
           const isSel = selected.includes(d.id);
           const order = selected.indexOf(d.id);
+          const currentCount = users.filter((u) => u.departments.includes(d.id)).length;
+          const limit = LIMITS[d.id] || 5;
+          const isFull = currentCount >= limit;
+          
           return (
             <div
               key={d.id}
@@ -59,15 +74,15 @@ export default function Departments({ user, onLock }) {
                   : "1px solid var(--border)",
                 background: isSel ? "var(--accent-soft)" : "var(--bg-panel)",
                 borderRadius: 2,
-                cursor: user.locked ? "default" : "pointer",
-                opacity: user.locked && !isSel ? 0.4 : 1,
+                cursor: (user.locked || (!isSel && isFull)) ? "default" : "pointer",
+                opacity: (user.locked && !isSel) || (!isSel && isFull) ? 0.4 : 1,
                 textAlign: "center",
                 transition: "border-color 0.18s, background 0.18s, opacity 0.18s",
                 userSelect: "none",
               }}
             >
-              {/* Preference badge */}
-              {isSel && (
+              {/* Preference badge or Full indicator */}
+              {(isSel || isFull) && (
                 <span style={{
                   position: "absolute",
                   top: 6,
@@ -75,9 +90,9 @@ export default function Departments({ user, onLock }) {
                   fontSize: 8,
                   fontWeight: 700,
                   letterSpacing: "0.08em",
-                  color: user.locked ? "var(--accent)" : "var(--accent)",
+                  color: (user.locked || isFull) ? "var(--accent)" : "var(--accent)",
                 }}>
-                  {user.locked ? "LOCKED" : `P${order + 1}`}
+                  {isSel ? (user.locked ? "LOCKED" : `P${order + 1}`) : "FULL"}
                 </span>
               )}
 
@@ -109,6 +124,19 @@ export default function Departments({ user, onLock }) {
                 marginTop: 2,
               }}>
                 {d.desc}
+              </div>
+
+              {/* Capacity indicator */}
+              <div style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: isFull ? "var(--danger)" : "var(--accent-2)",
+                marginTop: 6,
+                padding: "2px 6px",
+                border: `1px solid ${isFull ? "var(--danger)" : "var(--accent-2)"}`,
+                borderRadius: 10,
+              }}>
+                {currentCount} / {limit} SEATS
               </div>
             </div>
           );
