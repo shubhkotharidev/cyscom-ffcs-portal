@@ -28,9 +28,10 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {
   try {
     const { dept, title, brief, seatsTotal } = req.body;
     const seats = parseInt(seatsTotal, 10);
+    const cleanDept = dept ? dept.trim() : 'general';
 
-    if (!dept || !title || !brief || !seats || seats <= 0) {
-      return res.status(400).json({ error: 'All project fields are required.' });
+    if (!title || !brief || !seats || seats <= 0) {
+      return res.status(400).json({ error: 'Title, brief, and seat count are all required.' });
     }
     if (title.trim().length > 200) {
       return res.status(400).json({ error: 'Title must be under 200 characters.' });
@@ -47,7 +48,7 @@ router.post('/', authenticateToken, requireSuperAdmin, async (req, res) => {
       `INSERT INTO projects (id, dept, title, brief, seats_total, seats_filled, applicants)
        VALUES ($1, $2, $3, $4, $5, 0, '{}')
        RETURNING id, dept, title, brief, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
-      [id, dept, title.trim(), brief.trim(), seats]
+      [id, cleanDept, title.trim(), brief.trim(), seats]
     );
 
     return res.json(inserted.rows[0]);
