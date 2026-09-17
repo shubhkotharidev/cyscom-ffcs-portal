@@ -23,22 +23,29 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
-// GET /api/projects/requests  (Admin + SuperAdmin)
+// GET /api/projects/requests  (Admin + SuperAdmin get all, Members get their own)
 router.get('/requests', authenticateToken, async (req, res) => {
   try {
-    if (!['admin', 'super_admin'].includes(req.user.role)) {
-      return res.status(403).json({ error: 'Staff access required.' });
+    const isAdmin = ['admin', 'super_admin'].includes(req.user.role);
+    
+    let query = `
+      SELECT pr.id, pr.project_id AS "projectId", pr.user_email AS email,
+             pr.user_name AS name, pr.reg_no AS "regNo", pr.status,
+             pr.requested_at AS "requestedAt", pr.reviewed_by AS "reviewedBy",
+             pr.reviewed_at AS "reviewedAt",
+             p.title AS "projectTitle"
+      FROM project_requests pr
+      JOIN projects p ON p.id = pr.project_id
+    `;
+    const params = [];
+
+    if (!isAdmin) {
+      query += ` WHERE pr.user_email = $1 `;
+      params.push(req.user.email);
     }
-    const result = await db.query(
-      `SELECT pr.id, pr.project_id AS "projectId", pr.user_email AS email,
-              pr.user_name AS name, pr.reg_no AS "regNo", pr.status,
-              pr.requested_at AS "requestedAt", pr.reviewed_by AS "reviewedBy",
-              pr.reviewed_at AS "reviewedAt",
-              p.title AS "projectTitle"
-       FROM project_requests pr
-       JOIN projects p ON p.id = pr.project_id
-       ORDER BY pr.created_at DESC`
-    );
+    query += ` ORDER BY pr.created_at DESC`;
+
+    const result = await db.query(query, params);
     return res.json(result.rows);
   } catch (err) {
     console.error('Fetch project requests error:', err);

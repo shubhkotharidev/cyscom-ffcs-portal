@@ -44,7 +44,7 @@ export default function Projects({ user, projects, projectRequests = [], onReque
             if (isApproved) {
               btnLabel = "APPROVED ✓"; btnClass = ""; btnDisabled = true;
             } else if (isPending) {
-              btnLabel = "REQUEST PENDING…"; btnClass = ""; btnDisabled = true;
+              btnLabel = "REQUESTED"; btnClass = ""; btnDisabled = true;
             } else if (full) {
               btnLabel = "SEATS FULL"; btnClass = ""; btnDisabled = true;
             } else if (isRequesting) {
