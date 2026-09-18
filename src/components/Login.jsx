@@ -150,8 +150,8 @@ export default function Login({ onLogin, error }) {
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 40, position: "relative" }}>
           
           {/* Animated Mini Dyson Logo */}
-          <div style={{ marginBottom: 30, display: "flex", justifyContent: "center", alignItems: "center", width: 180, height: 180 }}>
-            <div className="dyson-container" style={{ transform: "scale(0.6)", transformOrigin: "center" }}>
+          <div style={{ marginBottom: 40, display: "flex", justifyContent: "center", alignItems: "center", width: 240, height: 240 }}>
+            <div className="dyson-container" style={{ transform: "scale(0.8)", transformOrigin: "center" }}>
               <div className="dyson-sphere">
                 <div className="dyson-ring r1"></div>
                 <div className="dyson-ring r2"></div>
