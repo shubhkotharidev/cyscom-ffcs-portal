@@ -149,9 +149,17 @@ export default function Login({ onLogin, error }) {
         {/* ── Left Side: Form ── */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 40, position: "relative" }}>
           
-          {/* Minimalist Logo */}
-          <div style={{ marginBottom: 40, display: "flex", justifyContent: "center" }}>
-             <img src="/logo1.png" alt={BRAND} style={{ width: 64, height: 64, opacity: 1, filter: "drop-shadow(0 0 8px rgba(255,255,255,0.2))" }} />
+          {/* Animated Mini Dyson Logo */}
+          <div style={{ marginBottom: 20, display: "flex", justifyContent: "center", alignItems: "center", width: 120, height: 120 }}>
+            <div className="dyson-container" style={{ transform: "scale(0.35)", transformOrigin: "center" }}>
+              <div className="dyson-sphere">
+                <div className="dyson-ring r1"></div>
+                <div className="dyson-ring r2"></div>
+                <div className="dyson-ring r3"></div>
+                <div className="dyson-ring r4"></div>
+              </div>
+              <img src="/logo1.png" alt={BRAND} className="dyson-logo" style={{ opacity: 0.9 }} />
+            </div>
           </div>
 
           <div style={{ width: "100%", maxWidth: 320 }}>
