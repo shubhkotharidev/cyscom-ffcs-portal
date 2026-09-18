@@ -873,7 +873,7 @@ export default function GlobalStyle() {
         box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       }
       .login-right {
-        flex: 1;
+        flex: 1.5;
         display: flex;
         align-items: center;
         justify-content: center;
