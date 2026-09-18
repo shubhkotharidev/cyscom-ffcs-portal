@@ -291,17 +291,6 @@ export default function Login({ onLogin, error }) {
           )}
         </div>
       </div>
-
-      {/* Dyson Sphere Footer */}
-      <div className="dyson-container" style={{ margin: "20px auto 30px auto" }}>
-        <div className="dyson-sphere">
-          <div className="dyson-ring r1"></div>
-          <div className="dyson-ring r2"></div>
-          <div className="dyson-ring r3"></div>
-          <div className="dyson-ring r4"></div>
-        </div>
-        <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
-      </div>
     </div>
   );
 }
