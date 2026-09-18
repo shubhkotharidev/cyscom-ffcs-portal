@@ -851,10 +851,26 @@ export default function GlobalStyle() {
         max-height: 350px;
         opacity: 0.5;
       }
+      .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0d0d0d;
+        padding: 40px;
+      }
       .login-split {
         display: flex;
         flex-direction: row;
-        min-height: 100vh;
+        width: 100%;
+        max-width: 1100px;
+        height: 75vh;
+        min-height: 600px;
+        background: #131313;
+        border: 1px solid #2a2a2a;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       }
       .login-right {
         flex: 1;
@@ -863,14 +879,20 @@ export default function GlobalStyle() {
         justify-content: center;
         position: relative;
         overflow: hidden;
-        background: #080c16; /* very subtle tint */
+        background: #0d0d0d;
+        border-left: 1px solid #2a2a2a;
       }
       @media (max-width: 768px) {
+        .login-wrapper {
+          padding: 16px;
+        }
         .login-split {
           flex-direction: column;
+          height: auto;
+          min-height: 500px;
         }
         .login-right {
-          display: none; /* Hide visual on mobile to save space */
+          display: none;
         }
       }
       .landing-glass-card {
