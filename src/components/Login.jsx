@@ -141,9 +141,6 @@ export default function Login({ onLogin, error }) {
       setLocalError("Cannot connect to server. Please ensure the backend is running.");
     }
   }
-
-  return (
-  return (
   return (
     <div className="cg-fade-in login-wrapper">
       <div className="login-split">
