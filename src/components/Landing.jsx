@@ -1,32 +1,75 @@
-import { useEffect, useState } from "react";
-import { BRAND, SUBTITLE } from "../lib/constants";
+import { useEffect, useMemo, useRef, useState } from "react";
+import gsap from "gsap";
+import { BRAND, SUBTITLE, SEED_PROJECTS } from "../lib/constants";
 
 /* ---------------------------------------------------------------------- */
-/* Simple fade transition (landing -> login)                              */
+/* Pixel cover transition (landing -> login)                              */
 /* ---------------------------------------------------------------------- */
+
+const COLS = 22;
+const ROWS = 13;
 
 export function PixelTransition({ onDone }) {
+  const gridRef = useRef(null);
+  const tiles = useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < COLS * ROWS; i++) {
+      const tone = Math.random();
+      arr.push({ color: tone > 0.88 ? "#60a5fa" : tone > 0.55 ? "#2563eb" : "#081026" });
+    }
+    return arr;
+  }, []);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onDone();
-    }, 400); // Quick fade time
-    return () => clearTimeout(timer);
+    const tilesEls = gridRef.current.querySelectorAll(".cg-pixel-tile");
+    gsap.set(tilesEls, { scale: 0 });
+
+    const tl = gsap.timeline({ onComplete: onDone });
+
+    tl.to(tilesEls, {
+      scale: 1,
+      duration: 0.12,
+      stagger: { each: 0.03, from: "center", grid: [ROWS, COLS] },
+      ease: "power2.in",
+    }).to(
+      tilesEls,
+      {
+        scale: 0,
+        duration: 0.15,
+        stagger: { each: 0.02, from: "edges", grid: [ROWS, COLS] },
+        ease: "power2.out",
+      },
+      "+=0.9"
+    );
+
+    return () => tl.kill();
   }, [onDone]);
 
   return (
     <div
-      className="cg-fade-in"
+      ref={gridRef}
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "var(--bg)",
+        display: "grid",
+        gridTemplateColumns: `repeat(${COLS}, 1fr)`,
+        gridTemplateRows: `repeat(${ROWS}, 1fr)`,
+        background: "#000",
       }}
-    />
+    >
+      {tiles.map((tile, i) => (
+        <div key={i} className="cg-pixel-tile" style={{ background: tile.color }} />
+      ))}
+    </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
+/* Terminal prompt — type /enter to proceed                               */
+/* ---------------------------------------------------------------------- */
+
+
 /* Landing                                                                */
 /* ---------------------------------------------------------------------- */
 
@@ -45,13 +88,27 @@ export default function Landing({ onEnter }) {
         padding: "24px" 
       }}
     >
-      <div className="landing-glass-card">
-        <span className="cg-logo-hero">FFCS</span>
-        <div style={{ marginTop: 8, marginBottom: 46, fontSize: 13, color: "var(--text-dim)", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500 }}>
-          BY CYSCOM
+      {/* Background Dyson Sphere */}
+      <div className="landing-dyson-bg">
+        <div className="dyson-container">
+          <div className="dyson-sphere">
+            <div className="dyson-ring r1"></div>
+            <div className="dyson-ring r2"></div>
+            <div className="dyson-ring r3"></div>
+            <div className="dyson-ring r4"></div>
+          </div>
+          <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
         </div>
-        <button className="cg-btn cg-btn-solid" onClick={onEnter} style={{ fontSize: 12, padding: "12px 32px", letterSpacing: "0.1em" }}>
-          INITIALIZE SYSTEM
+      </div>
+
+      {/* Foreground Glassmorphism Card */}
+      <div className="landing-glass-card">
+        <span className="cg-logo-hero">CYSCOM</span>
+        <div className="cg-label" style={{ marginTop: 14, marginBottom: 46, textAlign: "center" }}>
+          {SUBTITLE}
+        </div>
+        <button className="cg-btn cg-btn-solid" onClick={onEnter} style={{ fontSize: 13, padding: "12px 32px", letterSpacing: "0.15em" }}>
+          ENTER PORTAL
         </button>
       </div>
     </div>
