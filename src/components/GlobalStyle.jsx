@@ -851,6 +851,28 @@ export default function GlobalStyle() {
         max-height: 350px;
         opacity: 0.5;
       }
+      .login-split {
+        display: flex;
+        flex-direction: row;
+        min-height: 100vh;
+      }
+      .login-right {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        background: #080c16; /* very subtle tint */
+      }
+      @media (max-width: 768px) {
+        .login-split {
+          flex-direction: column;
+        }
+        .login-right {
+          display: none; /* Hide visual on mobile to save space */
+        }
+      }
       .landing-glass-card {
         position: relative;
         z-index: 10;
