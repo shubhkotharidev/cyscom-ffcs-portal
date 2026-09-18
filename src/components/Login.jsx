@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { BRAND } from "../lib/constants";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -7,52 +7,104 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 function parseJwt(token) {
   try {
     const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+
     return JSON.parse(atob(base64));
   } catch {
     return null;
   }
 }
 
-const ASCII_PILLARS = `
-       ,:::,           ,:::,           ,:::,       
-      :::::::\`+       :::::::\`+       :::::::\`+    
-     :::::::::\`      :::::::::\`      :::::::::\`    
-     ;:::::::::      ;:::::::::      ;:::::::::    
-     ::::::::::      ::::::::::      ::::::::::    
-    ,::::::::::,    ,::::::::::,    ,::::::::::,   
-    ::::::::::::    ::::::::::::    ::::::::::::   
-    ;||||||||||;    ;||||||||||;    ;||||||||||;   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ||||||||||||    ||||||||||||    ||||||||||||   
-    ;||||||||||;    ;||||||||||;    ;||||||||||;   
-    ,::::::::::,    ,::::::::::,    ,::::::::::,   
-   .::::::::::::.  .::::::::::::.  .::::::::::::.  
-  ,::::::::::::::,,::::::::::::::,,::::::::::::::, 
-  :::::::::::::::::::::::::::::::::::::::::::::::: 
-`;
+function DynamicAsciiPillars() {
+  const art = useMemo(() => {
+    const width = 80;
+    const height = 45;
+    const lines = [];
+
+    const dither = (val) => {
+      const chars = " .:-=+*#%@";
+      let index = Math.round(val);
+      if (index < 0) index = 0;
+      if (index > 9) index = 9;
+      return chars[index];
+    };
+
+    const drawPillar = (cx, cy_offset, y, x) => {
+      let dx = x - cx;
+      let density = -1;
+      if (y < cy_offset || y > height - 1) return -1;
+
+      if (y > cy_offset + 5 && y < height - 5) {
+        if (Math.abs(dx) <= 7) {
+          let nx = dx / 7;
+          let nz = Math.sqrt(1 - nx*nx);
+          let diffuse = Math.max(0, nx * -0.7 + nz * 0.7);
+          density = 2 + diffuse * 7;
+          if (Math.abs(dx) % 3 === 0) density -= 1.5;
+        }
+      } else if (y >= cy_offset && y <= cy_offset + 5) {
+        let dy = y - cy_offset;
+        let w = 7 + (5 - dy);
+        if (Math.abs(dx) <= w) {
+          let nx = dx / w;
+          let nz = Math.sqrt(1 - nx*nx);
+          density = 3 + Math.max(0, nx * -0.7 + nz * 0.7) * 6;
+          if (dy % 2 === 0) density += 2;
+        }
+      } else if (y >= height - 5) {
+        let dy = y - (height - 5);
+        let w = 7 + dy;
+        if (Math.abs(dx) <= w) {
+          let nx = dx / w;
+          let nz = Math.sqrt(1 - nx*nx);
+          density = 3 + Math.max(0, nx * -0.7 + nz * 0.7) * 6;
+          if (dy % 2 === 0) density -= 1.5;
+        }
+      }
+      if (density >= 0) {
+        density += (Math.random() - 0.5) * 2;
+      }
+      return density;
+    };
+
+    for (let y = 0; y < height; y++) {
+      let row = "";
+      for (let x = 0; x < width; x++) {
+        let d = -1;
+        let d1 = drawPillar(16, 2, y, x);
+        let d2 = drawPillar(40, 6, y, x);
+        let d3 = drawPillar(64, -2, y, x);
+        
+        if (d1 >= 0) d = d1;
+        if (d2 >= 0) d = d2;
+        if (d3 >= 0) d = d3;
+
+        if (d >= 0) {
+          row += dither(d);
+        } else {
+          row += Math.random() > 0.98 ? "." : " ";
+        }
+      }
+      lines.push(row);
+    }
+    return lines.join("\n");
+  }, []);
+
+  return (
+    <pre style={{ 
+      margin: 0, 
+      padding: 0, 
+      fontFamily: "monospace", 
+      fontSize: "10px", 
+      lineHeight: "10px", 
+      color: "#666", 
+      opacity: 0.8, 
+      userSelect: "none",
+      letterSpacing: "0.1em"
+    }}>
+      {art}
+    </pre>
+  );
+}
 
 export default function Login({ onLogin, error }) {
   const [step, setStep] = useState("gate"); // gate -> details -> staff
@@ -358,9 +410,7 @@ export default function Login({ onLogin, error }) {
 
         {/* ── Right Side: Graphic ── */}
         <div className="login-right">
-          <pre style={{ margin: 0, padding: 0, fontFamily: "monospace", fontSize: 14, lineHeight: "14px", color: "#666", opacity: 0.6, userSelect: "none" }}>
-            {ASCII_PILLARS}
-          </pre>
+          <DynamicAsciiPillars />
         </div>
       </div>
     </div>
