@@ -48,8 +48,12 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
         minHeight: "100vh", 
         display: "flex", 
         flexDirection: "column",
-        background: "url('/bg.png') center/cover fixed no-repeat",
-        backgroundColor: "#0d0d0d"
+        backgroundColor: "#080a0f",
+        backgroundImage: `
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
+        `,
+        backgroundSize: "32px 32px"
       }}
     >
       <div className="cg-shell-bar">
