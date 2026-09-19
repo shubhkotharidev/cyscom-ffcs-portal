@@ -288,6 +288,15 @@ export default function GlobalStyle() {
         text-align: center;
       }
       .cg-podium-card.rank-1 { padding: 40px 16px 30px; background: #f0f0f0; }
+      .cg-podium-card.rank-2 { }
+      .cg-podium-card.rank-3 { }
+      @media (max-width: 600px) {
+        .cg-podium { flex-direction: column; align-items: stretch; gap: 20px; }
+        .cg-podium-card { max-width: 100%; width: 100%; padding: 20px 16px; }
+        .cg-podium-card.rank-1 { order: 1; padding: 24px 16px; }
+        .cg-podium-card.rank-2 { order: 2; }
+        .cg-podium-card.rank-3 { order: 3; }
+      }
       .cg-podium-rank { font-size: 12px; font-weight: 700; color: #000; margin-bottom: 10px; }
       .cg-podium-name { font-size: 16px; font-weight: 800; margin-bottom: 14px; word-break: break-word; }
       .cg-podium-points { font-size: 28px; font-weight: 800; color: #000; }
@@ -320,10 +329,9 @@ export default function GlobalStyle() {
       }
 
       /* departments */
-      .cg-dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-      @media (max-width: 800px) { .cg-dept-grid { grid-template-columns: repeat(3, 1fr); } }
-      @media (max-width: 600px) { .cg-dept-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-      @media (max-width: 380px) { .cg-dept-grid { grid-template-columns: 1fr !important; } }
+      .cg-dept-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      @media (max-width: 800px) { .cg-dept-grid { grid-template-columns: repeat(2, 1fr); } }
+      @media (max-width: 600px) { .cg-dept-grid { grid-template-columns: 1fr !important; } }
 
       .cg-dept-layout { display: grid; grid-template-columns: 260px 1fr; gap: 30px; align-items: start; }
       @media (max-width: 800px) {
