@@ -45,9 +45,6 @@ export default function Departments({ user, users = [], onLock }) {
 
       {/* ── Five square department cards ── */}
       <div className={`cg-dept-grid ${blocked ? "shake" : ""}`} style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(5, 1fr)",
-        gap: 12,
         marginBottom: 28,
       }}>
         {DEPARTMENTS.map((d) => {

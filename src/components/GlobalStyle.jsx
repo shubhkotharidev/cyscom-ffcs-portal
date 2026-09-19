@@ -271,9 +271,6 @@ export default function GlobalStyle() {
       .cg-seat.filled { background: #000; }
       .cg-seat.full { background: #888; }
 
-      @media (max-width: 600px) { .cg-dept-grid { grid-template-columns: repeat(3, 1fr) !important; } }
-      @media (max-width: 380px) { .cg-dept-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-
       .cg-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
       .cg-scroll::-webkit-scrollbar-thumb { background: #000; border: 1px solid #fff; }
       .cg-scroll::-webkit-scrollbar-track { background: #f0f0f0; border-left: 1px solid #000; }
@@ -323,7 +320,16 @@ export default function GlobalStyle() {
       }
 
       /* departments */
+      .cg-dept-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+      @media (max-width: 800px) { .cg-dept-grid { grid-template-columns: repeat(3, 1fr); } }
+      @media (max-width: 600px) { .cg-dept-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+      @media (max-width: 380px) { .cg-dept-grid { grid-template-columns: 1fr !important; } }
+
       .cg-dept-layout { display: grid; grid-template-columns: 260px 1fr; gap: 30px; align-items: start; }
+      @media (max-width: 800px) {
+        .cg-dept-layout { grid-template-columns: 1fr; }
+        .cg-dept-sticky { position: static; margin-bottom: 24px; }
+      }
       .cg-dept-sticky { position: sticky; top: 24px; }
       .cg-dept-stack { display: flex; flex-direction: column; gap: 16px; }
       .cg-dept-stack-item {
@@ -409,6 +415,16 @@ export default function GlobalStyle() {
         gap: 8px;
         cursor: pointer;
       }
+      .cg-admin-user-row {
+        display: grid;
+        padding: 16px;
+        align-items: center;
+        border: 2px solid #000;
+        margin-bottom: 10px;
+        background: #fff;
+        box-shadow: 4px 4px 0px #000;
+        gap: 8px;
+      }
       .cg-member-row:hover, .cg-proj-row:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px #000; }
       .cg-member-detail {
         padding: 16px;
@@ -422,6 +438,18 @@ export default function GlobalStyle() {
       .cg-proj-row { grid-template-columns: 1fr 90px 110px; }
 
       .cg-submission-actions, .cg-member-actions, .cg-proj-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+      @media (max-width: 768px) {
+        .cg-admin-user-row, .cg-member-row, .cg-proj-row {
+          grid-template-columns: 1fr;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .cg-brutalist-card > .cg-admin-user-row:first-child,
+        .cg-brutalist-card > .cg-proj-row:first-child {
+          display: none;
+        }
+      }
 
       /* modal */
       .cg-form-grid-2 { display: grid; grid-template-columns: 1fr 130px; gap: 14px; }
