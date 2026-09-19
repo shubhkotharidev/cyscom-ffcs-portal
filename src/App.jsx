@@ -12,7 +12,7 @@ import SuperAdmin from "./components/SuperAdmin";
 import Admin from "./components/Admin";
 
 export default function App() {
-  const [phase, setPhase] = useState("landing"); // landing -> pixel -> login -> app
+  const [phase, setPhase] = useState("landing");
   const [tab, setTab] = useState("dashboard");
   const [users, setUsers] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -172,14 +172,7 @@ export default function App() {
   }
 
   /* ── Project application (kept for legacy compat) ── */
-  async function handleApply(projectId) {
-    try {
-      await apiCall(`/projects/${projectId}/apply`, "POST");
-      await refreshData();
-    } catch (err) {
-      alert(err.message);
-    }
-  }
+  async function handleApply(projectId) {}
 
   /* ── Submit contribution (member) ── */
   async function handleSubmitContribution(payload) {
@@ -214,7 +207,7 @@ export default function App() {
   /* ── Toggle Leaderboard Exclusion (super_admin) ── */
   async function handleToggleLeaderboardExclusion(email) {
     try {
-      await apiCall("/users/toggle-exclusion", "POST", { email });
+      await apiCall(`/users/exclude`, "POST", { email });
       await refreshData();
     } catch (err) {
       alert(err.message);
@@ -224,7 +217,7 @@ export default function App() {
   /* ── Direct task points assignment ── */
   async function handleAssignDirectPoints(email, title, points) {
     try {
-      await apiCall("/users/assign-points", "POST", { email, title, points });
+      await apiCall(`/users/assign-points`, "POST", { email, title, points });
       await refreshData();
     } catch (err) {
       alert(err.message);
@@ -282,14 +275,37 @@ export default function App() {
   }
 
   return (
-    <div className="cg-root cg-scan">
+    <div className={`cg-root ${phase === "app" ? "cg-app-mode" : ""}`}>
       <GlobalStyle />
 
       {phase === "landing" && <Landing onEnter={() => setPhase("pixel")} />}
       {phase === "pixel" && <PixelTransition onDone={() => setPhase("login")} />}
       {phase === "login" && <Login onLogin={handleLogin} error={loginError} />}
 
-      {phase === "app" && currentUser && (
+      {(phase === "app" || phase === "login") && (
+        <>
+          <div className="cg-side-text left">
+<pre>{`
+  ____ __   __ ____   ____  ___   __  __ 
+ / ___|\\ \\ / // ___| / ___|/ _ \\ |  \\/  |
+| |     \\ V / \\___ \\| |   | | | || |\\/| |
+| |___   | |   ___) | |___| |_| || |  | |
+ \\____|  |_|  |____/ \\____|\\___/ |_|  |_|
+`}</pre>
+          </div>
+          <div className="cg-side-text right">
+<pre>{`
+ _____  _____  ____  ____  
+|  ___||  ___|/ ___|/ ___| 
+| |_   | |_  | |    \\___ \\ 
+|  _|  |  _| | |___  ___) |
+|_|    |_|    \\____||____/ 
+`}</pre>
+          </div>
+        </>
+      )}
+
+      {phase === "app" && (
         <>
           <Shell user={currentUser} tab={tab} setTab={setTab} onLogout={handleLogout}>
             {tab === "dashboard" && (

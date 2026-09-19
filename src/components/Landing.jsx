@@ -1,116 +1,89 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import gsap from "gsap";
-import { BRAND, SUBTITLE, SEED_PROJECTS } from "../lib/constants";
+import { BRAND, SUBTITLE } from "../lib/constants";
 
 /* ---------------------------------------------------------------------- */
-/* Pixel cover transition (landing -> login)                              */
+/* Brutalist B&W static wipe transition                                   */
 /* ---------------------------------------------------------------------- */
-
-const COLS = 22;
-const ROWS = 13;
-
 export function PixelTransition({ onDone }) {
-  const gridRef = useRef(null);
-  const tiles = useMemo(() => {
-    const arr = [];
-    for (let i = 0; i < COLS * ROWS; i++) {
-      const tone = Math.random();
-      arr.push({ color: tone > 0.88 ? "#60a5fa" : tone > 0.55 ? "#2563eb" : "#081026" });
-    }
-    return arr;
-  }, []);
-
+  const COLS = 14;
+  const ROWS = 10;
+  
   useEffect(() => {
-    const tilesEls = gridRef.current.querySelectorAll(".cg-pixel-tile");
-    gsap.set(tilesEls, { scale: 0 });
-
-    const tl = gsap.timeline({ onComplete: onDone });
-
-    tl.to(tilesEls, {
-      scale: 1,
-      duration: 0.12,
-      stagger: { each: 0.03, from: "center", grid: [ROWS, COLS] },
-      ease: "power2.in",
-    }).to(
-      tilesEls,
-      {
-        scale: 0,
-        duration: 0.15,
-        stagger: { each: 0.02, from: "edges", grid: [ROWS, COLS] },
-        ease: "power2.out",
-      },
-      "+=0.9"
-    );
+    const tl = gsap.timeline();
+    tl.to('.tb', {
+      scale: 1.05,
+      duration: 0.15,
+      stagger: { amount: 0.5, from: 'random', grid: [ROWS, COLS] },
+      ease: 'power1.inOut'
+    })
+    .to('.tb', {
+      scale: 0,
+      duration: 0.15,
+      stagger: { amount: 0.5, from: 'random', grid: [ROWS, COLS] },
+      ease: 'power1.inOut',
+      onComplete: onDone,
+      delay: 0.1
+    });
 
     return () => tl.kill();
   }, [onDone]);
 
   return (
     <div
-      ref={gridRef}
       style={{
         position: "fixed",
         inset: 0,
         zIndex: 50,
+        pointerEvents: "none",
         display: "grid",
         gridTemplateColumns: `repeat(${COLS}, 1fr)`,
-        gridTemplateRows: `repeat(${ROWS}, 1fr)`,
-        background: "#000",
+        gridTemplateRows: `repeat(${ROWS}, 1fr)`
       }}
     >
-      {tiles.map((tile, i) => (
-        <div key={i} className="cg-pixel-tile" style={{ background: tile.color }} />
+      {Array.from({ length: COLS * ROWS }).map((_, i) => (
+        <div 
+          key={i} 
+          className="tb" 
+          style={{ 
+            background: "#000", 
+            transform: "scale(0)",
+            transformOrigin: "center"
+          }} 
+        />
       ))}
     </div>
   );
 }
 
-/* ---------------------------------------------------------------------- */
-/* Terminal prompt — type /enter to proceed                               */
-/* ---------------------------------------------------------------------- */
-
-
-/* Landing                                                                */
-/* ---------------------------------------------------------------------- */
 
 export default function Landing({ onEnter }) {
   return (
-    <div 
-      className="cg-fade-in" 
-      style={{ 
-        minHeight: "100vh", 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative", 
-        zIndex: 3, 
-        padding: "24px" 
-      }}
-    >
-      {/* Background Dyson Sphere */}
-      <div className="landing-dyson-bg">
-        <div className="dyson-container">
-          <div className="dyson-sphere">
-            <div className="dyson-ring r1"></div>
-            <div className="dyson-ring r2"></div>
-            <div className="dyson-ring r3"></div>
-            <div className="dyson-ring r4"></div>
-          </div>
-          <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
-        </div>
-      </div>
+    <div className="cg-fade-in" style={{ minHeight: "100vh", background: "#fff", color: "#000", position: "relative", zIndex: 3 }}>
+      
+      <div className="landing-hero" style={{ alignItems: "center", textAlign: "center", paddingTop: "8vh" }}>
+        <h1 style={{ fontSize: "clamp(48px, 10vw, 96px)", lineHeight: 1, margin: 0 }}>{BRAND} FFCS</h1>
 
-      {/* Foreground Glassmorphism Card */}
-      <div className="landing-glass-card">
-        <span className="cg-logo-hero">CYSCOM</span>
-        <div className="cg-label" style={{ marginTop: 14, marginBottom: 46, textAlign: "center" }}>
-          {SUBTITLE}
+        <div className="pixel-pc-setup" style={{ transform: "scale(1.4)", transformOrigin: "top center", marginTop: 20 }}>
+          <div className="pixel-pc">
+            <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
+              <div className="pixel-pc-text">C:\&gt;_</div>
+              
+              <button className="pixel-pc-enter-btn" onClick={onEnter}>
+                [ENTER_PORTAL]
+              </button>
+
+            </div>
+            <div className="pixel-pc-drive"></div>
+            <div className="pixel-pc-drive-btn"></div>
+          </div>
+          <div className="pixel-pc-peripherals">
+            <div className="pixel-pc-keyboard"></div>
+            <div className="pixel-pc-mouse"></div>
+          </div>
         </div>
-        <button className="cg-btn cg-btn-solid" onClick={onEnter} style={{ fontSize: 13, padding: "12px 32px", letterSpacing: "0.15em" }}>
-          ENTER PORTAL
-        </button>
       </div>
+      
     </div>
   );
 }

@@ -47,12 +47,11 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
         zIndex: 3, 
         minHeight: "100vh", 
         display: "flex", 
-        flexDirection: "column",
-        backgroundColor: "#080a0f"
+        flexDirection: "column" 
       }}
     >
       <div className="cg-shell-bar">
-        <span className="cg-logo-nav">Cyscom</span>
+        <img src="/logo1.png" alt={BRAND} style={{ height: 36, objectFit: "contain" }} />
 
         <button
           className={`cg-hamburger ${menuOpen ? "open" : ""}`}
@@ -97,16 +96,6 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
         {children}
       </div>
 
-      {/* Dyson Sphere Footer */}
-      <div className="dyson-container">
-        <div className="dyson-sphere">
-          <div className="dyson-ring r1"></div>
-          <div className="dyson-ring r2"></div>
-          <div className="dyson-ring r3"></div>
-          <div className="dyson-ring r4"></div>
-        </div>
-        <img src="/logo1.png" alt={BRAND} className="dyson-logo" />
-      </div>
     </div>
   );
 }

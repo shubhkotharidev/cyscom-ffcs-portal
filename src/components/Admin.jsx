@@ -353,7 +353,7 @@ function AdminUsersTab({ users, currentEmail, onAssignPoints, onUpdateDepartment
         Click any member row to assign task points directly or manage department selections.
       </div>
 
-      <div className="cg-panel">
+      <div className="cg-brutalist-card">
         <div className="cg-member-row cg-admin-user-row" style={{ cursor: "default", background: "transparent" }}>
           <div className="cg-label">MEMBER</div>
           <div className="cg-label cg-hide-mobile">DEPARTMENTS</div>
@@ -412,7 +412,7 @@ function AdminProjectsTab({ projects }) {
         </div>
       </div>
 
-      <div className="cg-panel">
+      <div className="cg-brutalist-card">
         <div className="cg-proj-row" style={{ cursor: "default" }}>
           <div className="cg-label">TITLE</div>
           <div className="cg-label">SEATS</div>

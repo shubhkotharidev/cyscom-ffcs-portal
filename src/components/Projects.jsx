@@ -3,14 +3,7 @@ import { useState } from "react";
 export default function Projects({ user, projects, projectRequests = [], onRequest }) {
   const [requestingId, setRequestingId] = useState(null);
 
-  if (!user.locked) {
-    return (
-      <div className="cg-panel" style={{ padding: 24 }}>
-        <div style={{ fontSize: 14, marginBottom: 6 }}>Lock your departments first</div>
-        <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>You need 2 locked departments before you can view and apply to projects.</div>
-      </div>
-    );
-  }
+
 
   async function handleRequest(projectId) {
     setRequestingId(projectId);
@@ -27,7 +20,7 @@ export default function Projects({ user, projects, projectRequests = [], onReque
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14 }}>
         {projects.length === 0 ? (
-          <div className="cg-panel cg-empty" style={{ gridColumn: "1 / -1" }}>No projects available at the moment.</div>
+          <div className="cg-brutalist-card cg-empty" style={{ gridColumn: "1 / -1", padding: "48px 24px 24px", textAlign: "center" }}>No projects available at the moment.</div>
         ) : (
           projects.map((p) => {
             const full = p.seatsFilled >= p.seatsTotal;
@@ -56,8 +49,12 @@ export default function Projects({ user, projects, projectRequests = [], onReque
             }
 
             return (
-              <div key={p.id} className="cg-panel" style={{ padding: 18, display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div key={p.id} className="cg-brutalist-card">
+                {full && <div className="cg-sticker" style={{ top: -10, right: -10, transform: "rotate(10deg)", background: "#000", color: "#fff" }}>LOCKED</div>}
+                {!full && isApproved && <div className="cg-sticker" style={{ top: -10, right: -10, transform: "rotate(-10deg)" }}>ENROLLED</div>}
+                
+                <div className="cg-brutalist-card-content" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div className="cg-label" style={{ color: "var(--accent)" }}>PROJECT</div>
                   {full && <div style={{ fontSize: 10, color: "var(--danger)", border: "1px solid var(--danger)", padding: "2px 6px" }}>LOCKED</div>}
                   {isRejected && !full && (
@@ -87,6 +84,7 @@ export default function Projects({ user, projects, projectRequests = [], onReque
                 >
                   {btnLabel}
                 </button>
+                </div>
               </div>
             );
           })

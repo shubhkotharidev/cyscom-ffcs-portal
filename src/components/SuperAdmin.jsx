@@ -293,7 +293,7 @@ function ProjectsTab({ projects, onAdd, onEdit, onDelete, isSuperAdmin }) {
         )}
       </div>
 
-      <div className="cg-panel">
+      <div className="cg-brutalist-card">
         <div className="cg-proj-row" style={{ cursor: "default" }}>
           <div className="cg-label">TITLE</div>
           <div className="cg-label">SEATS</div>
@@ -465,7 +465,7 @@ function UsersTab({ users, currentEmail, isSuperAdmin, onToggleExclusion, onAssi
         💡 Click any member row to assign task points, manage departments, or <strong style={{ color: "var(--accent)" }}>toggle Leaderboard inclusion/exclusion</strong>.
       </div>
 
-      <div className="cg-panel">
+      <div className="cg-brutalist-card">
         <div className="cg-member-row cg-admin-user-row" style={{ cursor: "default", background: "transparent" }}>
           <div className="cg-label">MEMBER</div>
           <div className="cg-label cg-hide-mobile">DEPARTMENTS</div>

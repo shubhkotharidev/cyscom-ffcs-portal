@@ -66,7 +66,7 @@ export default function Leaderboard({ users, currentEmail }) {
 
       {/* ── Member ranked list ── */}
       {rest.length > 0 && (
-        <div className="cg-panel">
+        <div className="cg-brutalist-card">
           <div className="cg-lb-header cg-label">
             <div>RANK</div><div>NAME</div><div className="cg-lb-regno">REG NO</div><div>POINTS</div>
           </div>

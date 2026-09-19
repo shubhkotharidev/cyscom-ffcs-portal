@@ -3,7 +3,7 @@ import { deptName } from "../lib/constants";
 
 function StatCard({ label, value, accent, small }) {
   return (
-    <div className="cg-panel" style={{ padding: "16px 18px" }}>
+    <div className="cg-brutalist-card" style={{ padding: "48px 18px 18px" }}>
       <div className="cg-label">{label}</div>
       <div className="cg-display" style={{ fontSize: small ? 15 : 30, fontWeight: 600, marginTop: 6, color: accent ? "var(--accent)" : "var(--text)", wordBreak: "break-word" }}>
         {value}
@@ -55,8 +55,12 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
 
   return (
     <div className="cg-fade-in">
-      <div className="cg-label">WELCOME BACK</div>
-      <div className="cg-display" style={{ fontSize: 32, fontWeight: 600, margin: "6px 0 28px" }}>{user.name}</div>
+      <div style={{ position: "relative", marginBottom: 32 }}>
+        <div className="cg-label" style={{ position: "relative", zIndex: 10 }}>WELCOME BACK</div>
+        <div className="cg-display" style={{ fontSize: 48, fontWeight: 800, margin: "6px 0", letterSpacing: "-0.02em", position: "relative", zIndex: 10 }}>
+          {user.name}
+        </div>
+      </div>
 
       {/* Stats Grid */}
       <div className="cg-dashboard-stats">
@@ -67,7 +71,7 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
       </div>
 
       {!user.locked && (
-        <div className="cg-panel" style={{ padding: 18, marginBottom: 28, borderColor: "var(--warn)" }}>
+        <div className="cg-brutalist-card" style={{ padding: "48px 18px 18px", marginBottom: 28, borderColor: "var(--warn)" }}>
           <div style={{ fontSize: 13, color: "var(--warn)", marginBottom: 8 }}>⚠ Department selection required</div>
           <div style={{ fontSize: 12.5, color: "var(--text-dim)", marginBottom: 12, lineHeight: 1.6 }}>
             Select and lock 2 departments before you can apply to projects.
@@ -78,7 +82,7 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
 
       {/* Log Contribution Form */}
       <div className="cg-label" style={{ marginBottom: 10 }}>LOG NEW CONTRIBUTION</div>
-      <div className="cg-panel" style={{ padding: "20px", marginBottom: 28 }}>
+      <div className="cg-brutalist-card" style={{ padding: "48px 24px 24px", marginBottom: 28 }}>
         <form onSubmit={handleLogContribution} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <div className="cg-label" style={{ marginBottom: 6 }}>SHORT DESCRIPTION</div>
@@ -148,7 +152,7 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
 
       {/* Approved Contribution Log */}
       <div className="cg-label" style={{ marginBottom: 10 }}>CONTRIBUTION LOG</div>
-      <div className="cg-panel" style={{ padding: combinedLogs.length ? 0 : 18 }}>
+      <div className="cg-brutalist-card" style={{ padding: combinedLogs.length ? "28px 0 0 0" : "48px 18px 18px" }}>
         {combinedLogs.length === 0 && (
           <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>No reviewed contributions yet. Points are awarded by admins after reviewing your submissions.</div>
         )}
