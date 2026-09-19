@@ -475,7 +475,7 @@ export default function GlobalStyle() {
       .cg-stat-card-value { font-size: 40px; font-weight: 800; color: #000; margin: 8px 0 4px; line-height: 1; }
       .cg-stat-card-sub { font-size: 14px; font-weight: 700; color: #444; text-transform: uppercase; }
 
-      .cg-empty { text-align: center; padding: 64px 24px; color: #000; font-size: 16px; font-weight: 700; border: 2px dashed #000; margin: 20px 0; }
+      .cg-empty { text-align: center; padding: 64px 24px; color: #000; font-size: 16px; font-weight: 700; border: 2px dashed #000; margin: 20px 16px; }
       .cg-empty-glyph { font-size: 48px; margin-bottom: 16px; }
 
       .cg-form-row { margin-bottom: 20px; }
