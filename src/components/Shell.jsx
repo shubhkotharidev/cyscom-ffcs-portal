@@ -47,7 +47,9 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
         zIndex: 3, 
         minHeight: "100vh", 
         display: "flex", 
-        flexDirection: "column" 
+        flexDirection: "column",
+        background: "url('/bg.png') center/cover fixed no-repeat",
+        backgroundColor: "#0d0d0d"
       }}
     >
       <div className="cg-shell-bar">
