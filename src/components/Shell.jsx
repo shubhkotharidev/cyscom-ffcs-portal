@@ -3,6 +3,15 @@ import { BRAND } from "../lib/constants";
 
 export default function Shell({ user, tab, setTab, onLogout, children }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const isSuperAdmin = user.role === "super_admin";
   const isAdmin = user.role === "admin";
@@ -47,15 +56,34 @@ export default function Shell({ user, tab, setTab, onLogout, children }) {
         zIndex: 3, 
         minHeight: "100vh", 
         display: "flex", 
-        flexDirection: "column",
-        backgroundColor: "#080a0f",
-        backgroundImage: `
-          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)
-        `,
-        backgroundSize: "32px 32px"
+        flexDirection: "column"
       }}
     >
+      {/* Fixed Parallax Background Container */}
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: -1,
+        overflow: "hidden",
+        backgroundColor: "#0d0d0d"
+      }}>
+        <div style={{
+          position: "absolute",
+          top: -100,
+          left: -50,
+          right: -50,
+          bottom: -150,
+          backgroundImage: "url('/bg.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          transform: `translateY(${scrollY * -0.25}px)`,
+          willChange: "transform"
+        }} />
+      </div>
       <div className="cg-shell-bar">
         <span className="cg-logo-nav">Cyscom</span>
 
