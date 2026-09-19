@@ -461,9 +461,6 @@ function UsersTab({ users, currentEmail, isSuperAdmin, onToggleExclusion, onAssi
         <input className="cg-input" placeholder="Search name, reg no, email…" value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
-      <div style={{ fontSize: 11, color: "var(--text-dim)", background: "var(--bg-panel)", border: "1px solid var(--border)", padding: "10px 14px", marginBottom: 16, borderRadius: 4 }}>
-        💡 Click any member row to assign task points, manage departments, or <strong style={{ color: "var(--accent)" }}>toggle Leaderboard inclusion/exclusion</strong>.
-      </div>
 
       <div className="cg-brutalist-card">
         <div className="cg-member-row cg-admin-user-row" style={{ cursor: "default", background: "transparent" }}>
@@ -730,9 +727,7 @@ export default function SuperAdmin({
           </div>
         </div>
       </div>
-      <div style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 28 }}>
-        Manage projects, department assignments, task point allocation, role permissions, and contribution submissions.
-      </div>
+
 
       <div className="cg-admin-tabs">
         {tabs.map((t) => (

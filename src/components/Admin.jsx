@@ -349,10 +349,6 @@ function AdminUsersTab({ users, currentEmail, onAssignPoints, onUpdateDepartment
         <input className="cg-input" placeholder="Search name, reg no, email…" value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
 
-      <div style={{ fontSize: 11, color: "var(--text-dim)", background: "var(--bg-panel)", border: "1px solid var(--border)", padding: "8px 12px", marginBottom: 16 }}>
-        Click any member row to assign task points directly or manage department selections.
-      </div>
-
       <div className="cg-brutalist-card">
         <div className="cg-member-row cg-admin-user-row" style={{ cursor: "default", background: "transparent" }}>
           <div className="cg-label">MEMBER</div>
@@ -574,9 +570,6 @@ export default function Admin({
             Admin Panel
           </div>
         </div>
-      </div>
-      <div style={{ fontSize: 12, color: "var(--text-dim)", marginBottom: 28 }}>
-        View club projects, review contribution submissions, award points, and manage member department selections.
       </div>
 
       <div className="cg-admin-tabs">
