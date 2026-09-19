@@ -3,9 +3,9 @@ import { deptName } from "../lib/constants";
 
 function StatCard({ label, value, accent, small }) {
   return (
-    <div className="cg-panel" style={{ padding: "16px 18px" }}>
-      <div className="cg-label">{label}</div>
-      <div className="cg-display" style={{ fontSize: small ? 15 : 30, fontWeight: 600, marginTop: 6, color: accent ? "var(--accent)" : "var(--text)", wordBreak: "break-word" }}>
+    <div className="px-card" style={{ margin: 0 }}>
+      <div className="px-stat-label">{label}</div>
+      <div className={`px-stat-value${small ? " small" : ""}${accent ? " accent" : ""}`}>
         {value}
       </div>
     </div>
@@ -18,28 +18,24 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState("");
 
-  // Pending submissions for this user
   const myPending = (pending || []).filter((p) => p.email === user.email && p.status === "pending");
-
   const myRejected = (pending || []).filter((p) => p.email === user.email && p.status === "rejected");
-  const rejectedLogs = myRejected.map(r => ({
+  const rejectedLogs = myRejected.map((r) => ({
     title: r.description,
     date: r.reviewedAt || r.submittedAt,
     points: 0,
-    isRejected: true
+    isRejected: true,
   }));
-
-  const combinedLogs = [...(user.contributions || []), ...rejectedLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const combinedLogs = [...(user.contributions || []), ...rejectedLogs].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
   function handleLogContribution(e) {
     e.preventDefault();
     if (!description.trim() || !driveLink.trim()) return;
     setIsSubmitting(true);
     setTimeout(() => {
-      onSubmitContribution({
-        description: description.trim(),
-        driveLink: driveLink.trim(),
-      });
+      onSubmitContribution({ description: description.trim(), driveLink: driveLink.trim() });
       setDescription("");
       setDriveLink("");
       setIsSubmitting(false);
@@ -54,115 +50,152 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
   }
 
   return (
-    <div className="cg-fade-in">
-      <div className="cg-label">WELCOME BACK</div>
-      <div className="cg-display" style={{ fontSize: 32, fontWeight: 600, margin: "6px 0 28px" }}>{user.name}</div>
+    <div className="px-root cg-fade-in">
+      <div className="px-content">
 
-      {/* Stats Grid */}
-      <div className="cg-dashboard-stats">
-        <StatCard label="POINTS" value={user.points} accent />
-        <StatCard label="CONTRIBUTIONS" value={user.contributions.length} />
-        <StatCard label="PREFERENCE 1" value={user.locked ? deptName(user.departments[0]) : "NOT LOCKED"} small />
-        <StatCard label="PREFERENCE 2" value={user.locked ? deptName(user.departments[1]) : "NOT LOCKED"} small />
-      </div>
-
-      {!user.locked && (
-        <div className="cg-panel" style={{ padding: 18, marginBottom: 28, borderColor: "var(--warn)" }}>
-          <div style={{ fontSize: 13, color: "var(--warn)", marginBottom: 8 }}>⚠ Department selection required</div>
-          <div style={{ fontSize: 12.5, color: "var(--text-dim)", marginBottom: 12, lineHeight: 1.6 }}>
-            Select and lock 2 departments before you can apply to projects.
+        {/* ── Welcome ── */}
+        <div style={{ marginBottom: 8 }}>
+          <div className="px-heading">member dashboard</div>
+          <div className="px-title">
+            Welcome back,<br />
+            <span>{user.name.split(" ")[0]}</span>
           </div>
-          <button className="cg-btn cg-btn-solid" onClick={() => setTab("departments")}>SELECT DEPARTMENTS →</button>
         </div>
-      )}
 
-      {/* Log Contribution Form */}
-      <div className="cg-label" style={{ marginBottom: 10 }}>LOG NEW CONTRIBUTION</div>
-      <div className="cg-panel" style={{ padding: "20px", marginBottom: 28 }}>
-        <form onSubmit={handleLogContribution} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <div className="cg-label" style={{ marginBottom: 6 }}>SHORT DESCRIPTION</div>
-            <input
-              className="cg-input"
-              placeholder="e.g. Designed poster for Annual Symposium"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <div className="cg-label" style={{ marginBottom: 6 }}>GOOGLE DRIVE LINK</div>
-            <input
-              type="text"
-              className="cg-input"
-              placeholder="Paste link here..."
-              value={driveLink}
-              onChange={(e) => setDriveLink(e.target.value)}
-              required
-            />
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-            <button
-              type="submit"
-              className="cg-btn cg-btn-solid"
-              disabled={isSubmitting || !description.trim() || !driveLink.trim()}
-            >
-              {isSubmitting ? "SUBMITTING…" : "SUBMIT FOR REVIEW"}
+        {/* ── Stat Cards ── */}
+        <div className="px-stats-grid">
+          <StatCard label="Points" value={user.points} accent />
+          <StatCard label="Contributions" value={user.contributions.length} />
+          <StatCard
+            label="Preference 1"
+            value={user.locked ? deptName(user.departments[0]) : "—"}
+            small
+          />
+          <StatCard
+            label="Preference 2"
+            value={user.locked ? deptName(user.departments[1]) : "—"}
+            small
+          />
+        </div>
+
+        {/* ── Warning: Dept not selected ── */}
+        {!user.locked && (
+          <div className="px-alert">
+            <div className="px-alert-title">⚠ Department selection required</div>
+            <div className="px-alert-body">
+              Select and lock 2 departments before you can apply to projects.
+            </div>
+            <button className="px-btn-ghost" onClick={() => setTab("departments")}>
+              Select Departments →
             </button>
-            {submitMsg && <div style={{ fontSize: 12, color: "var(--accent)" }}>{submitMsg}</div>}
           </div>
-        </form>
-      </div>
-
-      {/* Pending Submissions */}
-      {myPending.length > 0 && (
-        <>
-          <div className="cg-label" style={{ marginBottom: 10 }}>PENDING SUBMISSIONS</div>
-          <div style={{ marginBottom: 28 }}>
-            {myPending.map((sub) => (
-              <div key={sub.id} className={`cg-submission-card ${sub.status}`}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
-                  <div>
-                    <div style={{ fontSize: 13, marginBottom: 4 }}>{sub.description}</div>
-                    {sub.driveLink && (
-                      <a href={formatLink(sub.driveLink)} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: "var(--accent-2)" }}>
-                        Drive link ↗
-                      </a>
-                    )}
-                    <div style={{ fontSize: 10.5, color: "var(--text-dim)", marginTop: 6 }}>
-                      Submitted {sub.submittedAt}
-                    </div>
-                  </div>
-                  <span className={`cg-badge cg-badge-${sub.status}`}>
-                    {sub.status === "pending" ? "Pending" : sub.status === "approved" ? "Approved" : "Rejected"}
-                  </span>
-                </div>
-                {sub.status === "approved" && sub.awardedPoints && (
-                  <div style={{ marginTop: 10, fontSize: 12, color: "var(--accent)" }}>+{sub.awardedPoints} pts awarded</div>
-                )}
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Approved Contribution Log */}
-      <div className="cg-label" style={{ marginBottom: 10 }}>CONTRIBUTION LOG</div>
-      <div className="cg-panel" style={{ padding: combinedLogs.length ? 0 : 18 }}>
-        {combinedLogs.length === 0 && (
-          <div style={{ fontSize: 12.5, color: "var(--text-dim)" }}>No reviewed contributions yet. Points are awarded by admins after reviewing your submissions.</div>
         )}
-        {combinedLogs.map((c, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "12px 16px", borderBottom: i < combinedLogs.length - 1 ? "1px solid var(--border)" : "none" }}>
+
+        <hr className="px-divider" />
+
+        {/* ── Log Contribution ── */}
+        <div className="px-heading" style={{ marginBottom: 14 }}>log new contribution</div>
+        <div className="px-card" style={{ marginBottom: 28 }}>
+          <form onSubmit={handleLogContribution} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
-              <div style={{ fontSize: 13 }}>{c.title}</div>
-              <div style={{ fontSize: 10.5, color: "var(--text-dim)", marginTop: 2 }}>{c.date}</div>
+              <label className="px-label">Short Description</label>
+              <input
+                className="px-input"
+                placeholder="e.g. Designed poster for Annual Symposium"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
             </div>
-            <div style={{ color: c.isRejected ? "var(--danger)" : "var(--accent)", fontSize: 13, fontWeight: 600 }}>
-              {c.isRejected ? "Rejected" : `+${c.points}`}
+            <div>
+              <label className="px-label">Google Drive Link</label>
+              <input
+                className="px-input"
+                placeholder="Paste link here..."
+                value={driveLink}
+                onChange={(e) => setDriveLink(e.target.value)}
+                required
+              />
             </div>
-          </div>
-        ))}
+            <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+              <button
+                type="submit"
+                className="px-btn"
+                disabled={isSubmitting || !description.trim() || !driveLink.trim()}
+              >
+                {isSubmitting ? "Submitting…" : "Submit for Review"}
+              </button>
+              {submitMsg && (
+                <div style={{ fontSize: 12, color: "#1c6fff", letterSpacing: "0.05em" }}>
+                  ✓ {submitMsg}
+                </div>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* ── Pending Submissions ── */}
+        {myPending.length > 0 && (
+          <>
+            <div className="px-heading" style={{ marginBottom: 12 }}>pending submissions</div>
+            <div style={{ marginBottom: 28 }}>
+              {myPending.map((sub) => (
+                <div key={sub.id} className="px-sub-card">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
+                    <div>
+                      <div className="px-sub-title">{sub.description}</div>
+                      {sub.driveLink && (
+                        <a
+                          href={formatLink(sub.driveLink)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-sub-link"
+                        >
+                          Drive link ↗
+                        </a>
+                      )}
+                      <div className="px-sub-meta" style={{ marginTop: 6 }}>
+                        Submitted {sub.submittedAt}
+                      </div>
+                    </div>
+                    <span className={`px-badge px-badge-${sub.status}`}>
+                      {sub.status === "pending" ? "Pending" : sub.status === "approved" ? "Approved" : "Rejected"}
+                    </span>
+                  </div>
+                  {sub.status === "approved" && sub.awardedPoints && (
+                    <div style={{ marginTop: 10, fontSize: 12, color: "#1c6fff" }}>
+                      +{sub.awardedPoints} pts awarded
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ── Contribution Log ── */}
+        <div className="px-heading" style={{ marginBottom: 14 }}>contribution log</div>
+        <div className="px-card">
+          {combinedLogs.length === 0 ? (
+            <div className="px-empty">
+              No reviewed contributions yet —<br />
+              points are awarded by admins after reviewing your submissions.
+            </div>
+          ) : (
+            combinedLogs.map((c, i) => (
+              <div key={i} className="px-log-row">
+                <div>
+                  <div className="px-log-title">{c.title}</div>
+                  <div className="px-log-date">{c.date}</div>
+                </div>
+                <div className={`px-log-pts${c.isRejected ? " rejected" : ""}`}>
+                  {c.isRejected ? "Rejected" : `+${c.points} pts`}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
       </div>
     </div>
   );
