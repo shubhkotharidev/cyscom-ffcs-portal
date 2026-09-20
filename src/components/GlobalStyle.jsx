@@ -64,7 +64,7 @@ export default function GlobalStyle() {
         writing-mode: vertical-rl;
       }
       *, *::before, *::after { box-sizing: border-box; }
-      .cg-display { font-family: 'Pixelify Sans', cursive; font-weight: 500; text-transform: uppercase; }
+      .cg-display { font-family: 'Space Grotesk', sans-serif; font-weight: 800; }
 
       .cg-btn {
         font-family: 'Space Grotesk', sans-serif;
