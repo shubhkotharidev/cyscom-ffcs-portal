@@ -57,7 +57,7 @@ export default function Dashboard({ user, setTab, onSubmitContribution, pending 
     <div className="cg-fade-in">
       <div style={{ position: "relative", marginBottom: 32 }}>
         <div className="cg-label" style={{ position: "relative", zIndex: 10 }}>WELCOME BACK</div>
-        <div className="cg-display" style={{ fontFamily: "'Tiny5', sans-serif", fontSize: 48, fontWeight: 400, margin: "6px 0", letterSpacing: "-0.02em", position: "relative", zIndex: 10 }}>
+        <div className="cg-display" style={{ fontFamily: "'Pixelify Sans', cursive", fontSize: 48, fontWeight: 500, margin: "6px 0", letterSpacing: "-0.02em", position: "relative", zIndex: 10 }}>
           {user.name}
         </div>
       </div>
