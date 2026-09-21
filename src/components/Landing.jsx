@@ -67,15 +67,16 @@ export default function Landing({ onEnter }) {
 
         <div className="pixel-pc-setup" style={{ transform: "scale(1.4)", transformOrigin: "top center", marginTop: 20 }}>
           <div className="pixel-pc">
-            <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
-              <div className="pixel-pc-text">C:\&gt;_</div>
-              
-              <DysonSphere />
+            <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-evenly", alignItems: "center", padding: "10px 8px" }}>
+              <div className="pixel-pc-text" style={{ alignSelf: "flex-start" }}>C:\&gt;_</div>
 
-              <button className="pixel-pc-enter-btn" onClick={onEnter}>
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <DysonSphere />
+              </div>
+
+              <button className="pixel-pc-enter-btn" onClick={onEnter} style={{ width: "100%" }}>
                 [ENTER_PORTAL]
               </button>
-
             </div>
             <div className="pixel-pc-drive"></div>
             <div className="pixel-pc-drive-btn"></div>

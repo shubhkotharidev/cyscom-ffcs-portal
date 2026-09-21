@@ -836,6 +836,24 @@ export default function GlobalStyle() {
       }
       .cg-dyson-ring-wrap.a { animation: cgDysonOrbitA 7s linear infinite; }
       .cg-dyson-ring-wrap.b { animation: cgDysonOrbitB 11s linear infinite; }
+
+      /* Inline (inside pixel screen) variant — no float, no absolute */
+      .cg-dyson-inline {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+        perspective: 300px;
+      }
+      .cg-dyson-core-inline {
+        position: absolute;
+        inset: 10px;
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        z-index: 2;
+        pointer-events: none;
+      }
     `}</style>
   );
 }
