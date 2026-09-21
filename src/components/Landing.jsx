@@ -69,6 +69,11 @@ export default function Landing({ onEnter }) {
             <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
               <div className="pixel-pc-text">C:\&gt;_</div>
               
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, flex: 1, padding: "10px 0" }}>
+                <img src="/logo1.png" alt="Cyscom Logo" style={{ height: 32, objectFit: "contain" }} />
+                <img src="/logo.png" alt="Dyson Sphere" style={{ height: 36, objectFit: "contain" }} />
+              </div>
+
               <button className="pixel-pc-enter-btn" onClick={onEnter}>
                 [ENTER_PORTAL]
               </button>
