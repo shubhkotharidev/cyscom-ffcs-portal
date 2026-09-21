@@ -71,14 +71,14 @@ export default function Landing({ onEnter }) {
               
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flex: 1, padding: "10px 0" }}>
                 <div style={{ position: "relative", width: 64, height: 64, display: "flex", justifyContent: "center", alignItems: "center", transformStyle: "preserve-3d" }}>
-                  <div style={{ position: "absolute", inset: -4, border: "2px solid #0055ff", borderRadius: "50%", animation: "spin1 4s linear infinite", transformStyle: "preserve-3d" }} />
-                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0055ff", borderRadius: "50%", animation: "spin2 5s linear infinite reverse", transformStyle: "preserve-3d" }} />
-                  <div style={{ position: "absolute", inset: 4, border: "2px dotted #0055ff", borderRadius: "50%", animation: "spin3 6s linear infinite", transformStyle: "preserve-3d" }} />
+                  <div style={{ position: "absolute", inset: -4, border: "2px solid #0055ff", borderRadius: "50%", animation: "orbit1 4s linear infinite", transformStyle: "preserve-3d" }} />
+                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0055ff", borderRadius: "50%", animation: "orbit2 5s linear infinite reverse", transformStyle: "preserve-3d" }} />
+                  <div style={{ position: "absolute", inset: 4, border: "2px dotted #0055ff", borderRadius: "50%", animation: "orbit3 6s linear infinite", transformStyle: "preserve-3d" }} />
                   <style>
                     {`
-                      @keyframes spin1 { 0% { transform: rotateX(70deg) rotateY(0deg) rotateZ(0deg); } 100% { transform: rotateX(70deg) rotateY(0deg) rotateZ(360deg); } }
-                      @keyframes spin2 { 0% { transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg); } 100% { transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg); } }
-                      @keyframes spin3 { 0% { transform: rotateX(20deg) rotateY(70deg) rotateZ(0deg); } 100% { transform: rotateX(20deg) rotateY(70deg) rotateZ(360deg); } }
+                      @keyframes orbit1 { 0% { transform: rotateZ(0deg) rotateX(0deg); } 100% { transform: rotateZ(0deg) rotateX(360deg); } }
+                      @keyframes orbit2 { 0% { transform: rotateZ(60deg) rotateX(0deg); } 100% { transform: rotateZ(60deg) rotateX(360deg); } }
+                      @keyframes orbit3 { 0% { transform: rotateZ(120deg) rotateX(0deg); } 100% { transform: rotateZ(120deg) rotateX(360deg); } }
                     `}
                   </style>
                   <img src="/logo1.png" alt="Cyscom Logo" style={{ height: 32, objectFit: "contain", position: "relative", transform: "translateZ(0px)" }} />
