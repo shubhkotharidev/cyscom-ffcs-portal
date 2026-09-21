@@ -768,6 +768,74 @@ export default function GlobalStyle() {
         clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
         z-index: 5;
       }
+      /* Small orbiting dyson-sphere decoration */
+      .cg-dyson {
+        position: absolute;
+        top: 28px;
+        right: 28px;
+        width: 80px;
+        height: 80px;
+        z-index: 4;
+        perspective: 400px;
+        animation: cgDysonFloat 5s ease-in-out infinite;
+      }
+      .cg-dyson.lowered { top: 84px; }
+      .cg-dyson-core {
+        position: absolute;
+        inset: 18px;
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+        z-index: 2;
+      }
+      .cg-dyson-ring-wrap {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+      }
+      .cg-dyson-ring {
+        position: absolute;
+        inset: 0;
+        border: 1px dashed rgba(33,212,253,0.5);
+        border-radius: 50%;
+        animation: cgDysonSpin linear infinite;
+      }
+      .cg-dyson-ring.reverse {
+        inset: -10px;
+        border-color: rgba(57,255,156,0.45);
+        animation-direction: reverse;
+      }
+      .cg-dyson-ring::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: calc(50% - 2px);
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #dcfffa;
+        box-shadow: 0 0 6px rgba(33,212,253,0.9);
+      }
+      @keyframes cgDysonSpin {
+        from { transform: rotateZ(0deg); }
+        to { transform: rotateZ(360deg); }
+      }
+      @keyframes cgDysonFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+      @keyframes cgDysonOrbitA {
+        0%   { transform: rotateX(75deg) rotateY(0deg); }
+        50%  { transform: rotateX(75deg) rotateY(180deg); }
+        100% { transform: rotateX(75deg) rotateY(360deg); }
+      }
+      @keyframes cgDysonOrbitB {
+        0%   { transform: rotateX(60deg) rotateY(0deg); }
+        50%  { transform: rotateX(60deg) rotateY(-180deg); }
+        100% { transform: rotateX(60deg) rotateY(-360deg); }
+      }
+      .cg-dyson-ring-wrap.a { animation: cgDysonOrbitA 7s linear infinite; }
+      .cg-dyson-ring-wrap.b { animation: cgDysonOrbitB 11s linear infinite; }
     `}</style>
   );
 }
