@@ -70,11 +70,11 @@ export default function Landing({ onEnter }) {
               <div style={{ alignSelf: "center", position: "relative", width: 80, height: 80, flexShrink: 0, perspective: 800, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 10, pointerEvents: "none", transform: "translateZ(0px)" }} />
                 
-                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgCoreSpin 40s linear infinite" }}>
-                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin1 8s linear infinite" }} />
-                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin2 12s linear infinite" }} />
-                  <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin3 10s linear infinite" }} />
-                  <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin4 15s linear infinite" }} />
+                <div style={{ position: "absolute", inset: 5, transformStyle: "preserve-3d", animation: "cgCoreSpin 40s linear infinite" }}>
+                  <div style={{ position: "absolute", inset: 5, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin1 8s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 5, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin2 12s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 5, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin3 10s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 5, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin4 15s linear infinite" }} />
                 </div>
 
                 <style>
