@@ -73,23 +73,20 @@ export default function Landing({ onEnter }) {
                 <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 2, pointerEvents: "none", transform: "translateZ(0px)" }} />
                 
                 {/* Outer Dashed Ring */}
-                <div style={{ position: "absolute", inset: -12, transformStyle: "preserve-3d", animation: "cgDysonOrbitA 12s linear infinite" }}>
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitA 12s linear infinite" }}>
                   <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 8s linear infinite" }}>
-                    <div style={{ position: "absolute", top: -3, left: "calc(50% - 3px)", width: 6, height: 6, borderRadius: "50%", background: "#fff", boxShadow: "0 0 8px #0ea5e9" }} />
                   </div>
                 </div>
 
                 {/* Middle Solid Ring */}
-                <div style={{ position: "absolute", inset: -2, transformStyle: "preserve-3d", animation: "cgDysonOrbitB 10s linear infinite reverse" }}>
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitB 10s linear infinite reverse" }}>
                   <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 6s linear infinite reverse" }}>
-                    <div style={{ position: "absolute", top: -3, left: "calc(50% - 3px)", width: 6, height: 6, borderRadius: "50%", background: "#fff", boxShadow: "0 0 8px #0ea5e9" }} />
                   </div>
                 </div>
 
                 {/* Inner Dotted Ring */}
-                <div style={{ position: "absolute", inset: 8, transformStyle: "preserve-3d", animation: "cgDysonOrbitC 8s linear infinite" }}>
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitC 8s linear infinite" }}>
                   <div style={{ position: "absolute", inset: 0, border: "2px dotted #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 5s linear infinite" }}>
-                    <div style={{ position: "absolute", top: -3, left: "calc(50% - 3px)", width: 6, height: 6, borderRadius: "50%", background: "#fff", boxShadow: "0 0 8px #0ea5e9" }} />
                   </div>
                 </div>
 
