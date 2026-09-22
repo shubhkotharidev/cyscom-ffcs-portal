@@ -69,6 +69,27 @@ export default function Landing({ onEnter }) {
             <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
               <div className="pixel-pc-text">C:\&gt;_</div>
               
+              <div style={{ alignSelf: "center", position: "relative", width: 64, height: 64, flexShrink: 0, perspective: 300, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 2, pointerEvents: "none", transform: "translateZ(0px)" }} />
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitA 7s linear infinite" }}>
+                  <div style={{ position: "absolute", inset: 0, border: "1px dashed rgba(33,212,253,0.5)", borderRadius: "50%", animation: "cgDysonSpin 6s linear infinite" }}>
+                    <div style={{ position: "absolute", top: -2, left: "calc(50% - 2px)", width: 4, height: 4, borderRadius: "50%", background: "#dcfffa", boxShadow: "0 0 6px rgba(33,212,253,0.9)" }} />
+                  </div>
+                </div>
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitB 11s linear infinite" }}>
+                  <div style={{ position: "absolute", inset: -10, border: "1px dashed rgba(57,255,156,0.45)", borderRadius: "50%", animation: "cgDysonSpin 9s linear infinite reverse" }}>
+                    <div style={{ position: "absolute", top: -2, left: "calc(50% - 2px)", width: 4, height: 4, borderRadius: "50%", background: "#dcfffa", boxShadow: "0 0 6px rgba(33,212,253,0.9)" }} />
+                  </div>
+                </div>
+                <style>
+                  {`
+                    @keyframes cgDysonSpin { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
+                    @keyframes cgDysonOrbitA { 0% { transform: rotateX(75deg) rotateY(0deg); } 50% { transform: rotateX(75deg) rotateY(180deg); } 100% { transform: rotateX(75deg) rotateY(360deg); } }
+                    @keyframes cgDysonOrbitB { 0% { transform: rotateX(60deg) rotateY(0deg); } 50% { transform: rotateX(60deg) rotateY(-180deg); } 100% { transform: rotateX(60deg) rotateY(-360deg); } }
+                  `}
+                </style>
+              </div>
+
               <button className="pixel-pc-enter-btn" onClick={onEnter}>
                 [ENTER_PORTAL]
               </button>

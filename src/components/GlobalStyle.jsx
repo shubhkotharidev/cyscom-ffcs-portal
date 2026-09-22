@@ -588,7 +588,7 @@ export default function GlobalStyle() {
       }
       .pixel-pc-screen {
         width: 100%;
-        height: 120px;
+        height: 220px;
         background: #000;
         border: 4px solid #000;
         border-radius: 4px;
