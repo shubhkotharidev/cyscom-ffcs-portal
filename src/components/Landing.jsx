@@ -69,33 +69,23 @@ export default function Landing({ onEnter }) {
             <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
               <div className="pixel-pc-text">C:\&gt;_</div>
               
-              <div style={{ alignSelf: "center", position: "relative", width: 80, height: 80, flexShrink: 0, perspective: 400, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 2, pointerEvents: "none", transform: "translateZ(0px)" }} />
+              <div style={{ alignSelf: "center", position: "relative", width: 80, height: 80, flexShrink: 0, perspective: 800, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 10, pointerEvents: "none", transform: "translateZ(0px)" }} />
                 
-                {/* Outer Dashed Ring */}
-                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitA 12s linear infinite" }}>
-                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 8s linear infinite" }}>
-                  </div>
-                </div>
-
-                {/* Middle Solid Ring */}
-                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitB 10s linear infinite reverse" }}>
-                  <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 6s linear infinite reverse" }}>
-                  </div>
-                </div>
-
-                {/* Inner Dotted Ring */}
-                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgDysonOrbitC 8s linear infinite" }}>
-                  <div style={{ position: "absolute", inset: 0, border: "2px dotted #0ea5e9", borderRadius: "50%", animation: "cgDysonSpin 5s linear infinite" }}>
-                  </div>
+                <div style={{ position: "absolute", inset: 0, transformStyle: "preserve-3d", animation: "cgCoreSpin 40s linear infinite" }}>
+                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin1 8s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 0, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin2 12s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin3 10s linear infinite" }} />
+                  <div style={{ position: "absolute", inset: 0, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin4 15s linear infinite" }} />
                 </div>
 
                 <style>
                   {`
-                    @keyframes cgDysonSpin { from { transform: rotateZ(0deg); } to { transform: rotateZ(360deg); } }
-                    @keyframes cgDysonOrbitA { 0% { transform: rotateX(75deg) rotateY(0deg); } 50% { transform: rotateX(75deg) rotateY(180deg); } 100% { transform: rotateX(75deg) rotateY(360deg); } }
-                    @keyframes cgDysonOrbitB { 0% { transform: rotateX(60deg) rotateY(0deg); } 50% { transform: rotateX(60deg) rotateY(-180deg); } 100% { transform: rotateX(60deg) rotateY(-360deg); } }
-                    @keyframes cgDysonOrbitC { 0% { transform: rotateX(45deg) rotateY(0deg); } 50% { transform: rotateX(45deg) rotateY(180deg); } 100% { transform: rotateX(45deg) rotateY(360deg); } }
+                    @keyframes cgSpin1 { 0% { transform: rotateX(90deg) rotateY(0deg) rotateZ(0deg); } 100% { transform: rotateX(90deg) rotateY(0deg) rotateZ(360deg); } }
+                    @keyframes cgSpin2 { 0% { transform: rotateX(0deg) rotateY(90deg) rotateZ(0deg); } 100% { transform: rotateX(0deg) rotateY(90deg) rotateZ(-360deg); } }
+                    @keyframes cgSpin3 { 0% { transform: rotateX(45deg) rotateY(45deg) rotateZ(0deg); } 100% { transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg); } }
+                    @keyframes cgSpin4 { 0% { transform: rotateX(-45deg) rotateY(-45deg) rotateZ(0deg); } 100% { transform: rotateX(-45deg) rotateY(-45deg) rotateZ(-360deg); } }
+                    @keyframes cgCoreSpin { 0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); } 100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); } }
                   `}
                 </style>
               </div>
