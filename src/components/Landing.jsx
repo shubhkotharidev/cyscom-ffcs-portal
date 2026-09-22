@@ -33,7 +33,7 @@ export function PixelTransition({ onDone }) {
     <div
       style={{
         position: "fixed",
-        inset: 5,
+        inset: 0,
         zIndex: 50,
         pointerEvents: "none",
         display: "grid",
