@@ -67,8 +67,6 @@ export default function Landing({ onEnter }) {
         <div className="pixel-pc-setup" style={{ transform: "scale(1.4)", transformOrigin: "top center", marginTop: 20 }}>
           <div className="pixel-pc">
             <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
-              <div className="pixel-pc-text">C:\&gt;_</div>
-              
               <div style={{ alignSelf: "center", position: "relative", width: 80, height: 80, flexShrink: 0, perspective: 800, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 10, pointerEvents: "none", transform: "translateZ(0px)" }} />
                 
