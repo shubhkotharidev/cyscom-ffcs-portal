@@ -83,16 +83,17 @@ export default function Departments({ user, users = [], onLock }) {
               )}
 
               <div className="cg-brutalist-card-content" style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: 10 }}>
-                {/* Glyph */}
-                <div style={{
-                  fontSize: 32,
-                  fontFamily: "var(--mono)",
-                  color: "#000",
-                  lineHeight: 1,
-                  fontWeight: 800
-                }}>
-                  {d.glyph}
-                </div>
+                {/* Icon */}
+                <img
+                  src={d.icon}
+                  alt={d.name}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                />
 
                 {/* Name */}
                 <div style={{

@@ -2,12 +2,12 @@ export const BRAND = "CYSCOM";
 export const SUBTITLE = "FFCS Portal";
 
 export const DEPARTMENTS = [
-  { id: "webdev", name: "Web Dev", glyph: "</>", desc: "Build and ship the club's sites, portals, and internal tools." },
-  { id: "tech", name: "Tech", glyph: "{}", desc: "CTF infra, bots, and the technical backbone behind the events." },
-  { id: "design", name: "Design", glyph: "◈", desc: "Brand system, posters, and visual identity across every touchpoint." },
-  { id: "social", name: "Social Media", glyph: "@", desc: "Campaigns, content calendars, and community growth online." },
-  { id: "events", name: "Event Management", glyph: "▣", desc: "Logistics, run-sheets, and on-ground execution for events." },
-  { id: "outreach", name: "Outreach", glyph: "⚑", desc: "Sponsorships, external relations, and expanding the club's footprint." },
+  { id: "webdev",   name: "Web Dev",          glyph: "</>", icon: "/dept-webdev.jpg",  desc: "Build and ship the club's sites, portals, and internal tools." },
+  { id: "tech",     name: "Tech",             glyph: "{}",  icon: "/dept-tech.jpg",    desc: "CTF infra, bots, and the technical backbone behind the events." },
+  { id: "design",   name: "Design",           glyph: "◈",   icon: "/dept-design.jpg",  desc: "Brand system, posters, and visual identity across every touchpoint." },
+  { id: "social",   name: "Social Media",     glyph: "@",   icon: "/dept-social.jpg",  desc: "Campaigns, content calendars, and community growth online." },
+  { id: "events",   name: "Event Management", glyph: "▣",   icon: "/dept-events.jpg",  desc: "Logistics, run-sheets, and on-ground execution for events." },
+  { id: "outreach", name: "Outreach",         glyph: "⚑",   icon: "/dept-tech.jpg",    desc: "Sponsorships, external relations, and expanding the club's footprint." },
 ];
 
 export const SUPER_ADMIN_EMAILS = ["admin@vitstudent.ac.in", "root@vitstudent.ac.in"];
