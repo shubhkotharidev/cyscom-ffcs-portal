@@ -207,7 +207,7 @@ export default function App() {
   /* ── Toggle Leaderboard Exclusion (super_admin) ── */
   async function handleToggleLeaderboardExclusion(email) {
     try {
-      await apiCall(`/users/exclude`, "POST", { email });
+      await apiCall(`/users/toggle-exclusion`, "POST", { email });
       await refreshData();
     } catch (err) {
       alert(err.message);
