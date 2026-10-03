@@ -62,7 +62,7 @@ export default function Landing({ onEnter }) {
     <div className="cg-fade-in" style={{ minHeight: "100vh", background: "#fff", color: "#000", position: "relative", zIndex: 3 }}>
       
       <div className="landing-hero" style={{ alignItems: "center", textAlign: "center", paddingTop: "8vh" }}>
-        <h1 style={{ fontFamily: "'Barrio', cursive", fontSize: "clamp(48px, 10vw, 96px)", lineHeight: 1, margin: 0 }}>{BRAND} FFCS</h1>
+        <h1 style={{ fontFamily: "'Rubik Doodle Shadow', cursive", fontSize: "clamp(48px, 10vw, 96px)", lineHeight: 1, margin: 0 }}>{BRAND} FFCS</h1>
 
         <div className="pixel-pc-wrapper">
           <div className="pixel-pc-setup">
