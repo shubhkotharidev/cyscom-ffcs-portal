@@ -573,36 +573,63 @@ export default function GlobalStyle() {
         flex-wrap: wrap;
         gap: 40px;
       }
-      .pixel-pc-wrapper {
-        width: 100%;
-        max-width: 500px;
-        display: flex;
-        justify-content: center;
-        overflow: visible;
+      /* ── Binary art PC ── */
+      .binary-pc-wrapper {
+        position: relative;
+        width: min(500px, 90vw);
+        margin: 32px auto 0;
+        user-select: none;
       }
-      .pixel-pc-setup {
+      .binary-pc-img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      /* Overlay sits on the blank screen area of the image.
+         Image is 1024×1024. Screen starts ~10% from top, ends ~52% down,
+         and runs roughly 20%–80% horizontally. */
+      .binary-pc-overlay {
+        position: absolute;
+        top: 10%;
+        left: 20%;
+        width: 58%;
+        height: 42%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        position: relative;
-        transform: scale(1.1);
-        transform-origin: top center;
-        margin-top: 40px;
-        width: 440px; /* Force layout box to fit the peripherals */
+        justify-content: space-evenly;
       }
-      @media (max-width: 900px) {
-        .pixel-pc-setup {
-          transform: scale(0.8);
-          margin-bottom: -80px;
-        }
+      .binary-dyson {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        flex-shrink: 0;
+        perspective: 800px;
+      }
+      .binary-enter-btn {
+        background: transparent;
+        border: 2px solid #0ea5e9;
+        color: #0ea5e9;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        font-size: clamp(11px, 2.5vw, 16px);
+        letter-spacing: 2px;
+        cursor: pointer;
+        outline: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(14,165,233,0.4);
+        transition: all 0.15s ease;
+      }
+      .binary-enter-btn:hover {
+        background: #0ea5e9;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(14,165,233,0.7);
       }
       @media (max-width: 500px) {
-        .pixel-pc-setup {
-          transform: scale(0.65);
-          margin-top: 20px;
-          margin-bottom: -150px;
-        }
+        .binary-dyson { width: 64px; height: 64px; }
       }
+
       .pixel-pc-container {
         display: flex;
         flex-direction: column;
