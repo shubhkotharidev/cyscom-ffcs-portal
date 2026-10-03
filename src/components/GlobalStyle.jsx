@@ -578,15 +578,21 @@ export default function GlobalStyle() {
         flex-direction: column;
         align-items: center;
         position: relative;
-        transform: scale(1.2);
+        transform: scale(1.1);
         transform-origin: top center;
         margin-top: 40px;
       }
-      @media (max-width: 600px) {
+      @media (max-width: 900px) {
         .pixel-pc-setup {
-          transform: scale(0.65);
+          transform: scale(0.8);
+          margin-bottom: -80px;
+        }
+      }
+      @media (max-width: 500px) {
+        .pixel-pc-setup {
+          transform: scale(0.6);
           margin-top: 20px;
-          margin-bottom: -150px;
+          margin-bottom: -160px;
         }
       }
       .pixel-pc-container {
