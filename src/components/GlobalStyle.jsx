@@ -573,6 +573,13 @@ export default function GlobalStyle() {
         flex-wrap: wrap;
         gap: 40px;
       }
+      .pixel-pc-wrapper {
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        justify-content: center;
+        overflow: visible;
+      }
       .pixel-pc-setup {
         display: flex;
         flex-direction: column;
@@ -581,6 +588,7 @@ export default function GlobalStyle() {
         transform: scale(1.1);
         transform-origin: top center;
         margin-top: 40px;
+        width: 440px; /* Force layout box to fit the peripherals */
       }
       @media (max-width: 900px) {
         .pixel-pc-setup {
@@ -590,9 +598,9 @@ export default function GlobalStyle() {
       }
       @media (max-width: 500px) {
         .pixel-pc-setup {
-          transform: scale(0.6);
+          transform: scale(0.65);
           margin-top: 20px;
-          margin-bottom: -160px;
+          margin-bottom: -150px;
         }
       }
       .pixel-pc-container {

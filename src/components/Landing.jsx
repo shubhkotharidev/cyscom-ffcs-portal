@@ -64,7 +64,8 @@ export default function Landing({ onEnter }) {
       <div className="landing-hero" style={{ alignItems: "center", textAlign: "center", paddingTop: "8vh" }}>
         <h1 style={{ fontFamily: "'Barrio', cursive", fontSize: "clamp(48px, 10vw, 96px)", lineHeight: 1, margin: 0 }}>{BRAND} FFCS</h1>
 
-        <div className="pixel-pc-setup" style={{ transform: "scale(1.2)", transformOrigin: "top center", marginTop: 40 }}>
+        <div className="pixel-pc-wrapper">
+          <div className="pixel-pc-setup">
           
           <div className="pixel-pc-container" style={{ position: "relative" }}>
             {/* Pen Stand */}
@@ -132,6 +133,7 @@ export default function Landing({ onEnter }) {
             <div className="pixel-pc-mouse">
               <div className="pc-mouse-wire"></div>
             </div>
+          </div>
           </div>
         </div>
       </div>
