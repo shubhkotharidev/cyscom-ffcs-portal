@@ -84,7 +84,7 @@ export default function Landing({ onEnter }) {
             <div className="pixel-pc">
               {/* Sticky Note */}
               <div className="pc-sticky-note">
-                GOOD<br/>CODE<br/>SAFER<br/>PEOPLE<br/>:)
+                Nihara<br/>Please<br/>Approve<br/>Design<br/>:)
               </div>
               
               <div className="pc-screen-bezel">
