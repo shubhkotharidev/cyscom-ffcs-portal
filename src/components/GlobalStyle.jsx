@@ -653,92 +653,6 @@ export default function GlobalStyle() {
         display: flex;
         padding: 16px;
         box-shadow: inset 0 0 24px rgba(0,0,0,0.9);
-        animation: screenFlicker 6s infinite;
-      }
-      @keyframes screenFlicker {
-        0%, 96%, 98%, 100% { box-shadow: inset 0 0 24px rgba(0,0,0,0.9); }
-        97% { box-shadow: inset 0 0 24px rgba(255,0,60,0.4); }
-        99% { box-shadow: inset 0 0 24px rgba(14,165,233,0.3); }
-      }
-      .pc-screen-crack {
-        position: absolute;
-        inset: 0;
-        z-index: 10;
-        pointer-events: none;
-        background: 
-          linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 40.5%, rgba(255,255,255,0.4) 41%, transparent 41.5%),
-          linear-gradient(-25deg, transparent 60%, rgba(255,255,255,0.1) 60.5%, rgba(255,255,255,0.5) 61%, transparent 61.5%);
-      }
-      .pc-tape {
-        position: absolute;
-        background: #a9a9a9;
-        border: 2px solid #1a1a1a;
-        box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-        z-index: 15;
-        opacity: 0.8;
-      }
-      .pc-tape.tape-1 {
-        top: -10px;
-        right: 40px;
-        width: 50px;
-        height: 16px;
-        transform: rotate(15deg);
-      }
-      .pc-tape.tape-2 {
-        bottom: -5px;
-        left: 20px;
-        width: 40px;
-        height: 14px;
-        transform: rotate(-10deg);
-      }
-      .pc-wire-dangling {
-        position: absolute;
-        bottom: 20px;
-        right: -10px;
-        width: 30px;
-        height: 60px;
-        border-right: 3px solid #ff003c;
-        border-bottom: 3px solid #ff003c;
-        border-radius: 0 0 10px 0;
-        transform: rotate(15deg);
-        z-index: 1;
-      }
-      .glitch-text {
-        position: relative;
-        display: inline-block;
-      }
-      .glitch-text::before, .glitch-text::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
-        opacity: 0.8;
-      }
-      .glitch-text::before {
-        color: #0ea5e9;
-        z-index: -1;
-        animation: glitch-anim-1 3s infinite linear alternate-reverse;
-      }
-      .glitch-text::after {
-        color: #ff003c;
-        z-index: -2;
-        animation: glitch-anim-2 2.5s infinite linear alternate-reverse;
-      }
-      @keyframes glitch-anim-1 {
-        0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
-        20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
-        40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
-        60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
-        80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
-        100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
-      }
-      @keyframes glitch-anim-2 {
-        0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
-        20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 1px); }
-        40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, 2px); }
-        60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, -2px); }
-        80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, 1px); }
-        100% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -1px); }
       }
       .pc-sticky-note {
         position: absolute;
@@ -779,9 +693,6 @@ export default function GlobalStyle() {
         background: #1a1a1a;
         border-radius: 4px;
         box-shadow: inset 0 2px 0 rgba(0,0,0,0.5);
-      }
-      .pc-drive-slot.broken {
-        transform: rotate(4deg) translateY(2px);
       }
       .pc-drive-btn {
         width: 8px;
@@ -886,26 +797,6 @@ export default function GlobalStyle() {
           repeating-linear-gradient(0deg, transparent, transparent 12px, #1a1a1a 12px, #1a1a1a 14px);
         opacity: 0.6;
       }
-      .pc-popped-key-hole {
-        position: absolute;
-        top: 22px;
-        right: 48px;
-        width: 12px;
-        height: 12px;
-        background: #1a1a1a;
-        box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
-      }
-      .pc-loose-key {
-        position: absolute;
-        top: 10px;
-        right: 36px;
-        width: 14px;
-        height: 14px;
-        background: #e8e6df;
-        border: 2px solid #1a1a1a;
-        transform: rotate(25deg);
-        box-shadow: 2px 2px 0 #1a1a1a;
-      }
       .pixel-pc-mouse {
         width: 40px;
         height: 56px;
@@ -935,10 +826,6 @@ export default function GlobalStyle() {
         border-top: 2px solid #1a1a1a;
         border-radius: 10px 0 0 0;
         z-index: -1;
-      }
-      .pc-mouse-wire.broken {
-        border-top: 2px dashed #1a1a1a;
-        border-left: 2px solid #ff003c;
       }
 
       .quick-links-bar {

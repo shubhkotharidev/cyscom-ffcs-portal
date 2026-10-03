@@ -82,27 +82,19 @@ export default function Landing({ onEnter }) {
 
             {/* Monitor */}
             <div className="pixel-pc">
-              <div className="pc-tape tape-1"></div>
-              <div className="pc-tape tape-2"></div>
-              <div className="pc-wire-dangling"></div>
-
               {/* Sticky Note */}
               <div className="pc-sticky-note">
-                <span style={{ textDecoration: "line-through", opacity: 0.5 }}>GOOD</span><br/>
-                <span style={{ color: "#ff003c", fontWeight: 900 }}>PWNED!</span><br/>
-                SAFER<br/>PEOPLE<br/>:)
+                GOOD<br/>CODE<br/>SAFER<br/>PEOPLE<br/>:)
               </div>
               
               <div className="pc-screen-bezel">
                 <div className="pixel-pc-screen" style={{ flexDirection: "column", justifyContent: "space-between" }}>
-                  <div className="pc-screen-crack"></div>
-                  
                   <div style={{ alignSelf: "center", position: "relative", width: 80, height: 80, flexShrink: 0, perspective: 800, zIndex: 4, display: "flex", justifyContent: "center", alignItems: "center", marginTop: 10 }}>
                     <img src="/logo1.png" alt="Cyscom" style={{ position: "absolute", width: 44, height: 44, objectFit: "contain", zIndex: 10, pointerEvents: "none", transform: "translateZ(0px)" }} />
                     
                     <div style={{ position: "absolute", inset: 5, transformStyle: "preserve-3d", animation: "cgCoreSpin 40s linear infinite" }}>
                       <div style={{ position: "absolute", inset: 5, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin1 8s linear infinite" }} />
-                      <div style={{ position: "absolute", inset: 5, border: "2px dashed #ff003c", borderRadius: "50%", animation: "cgSpin2 12s linear infinite reverse" }} />
+                      <div style={{ position: "absolute", inset: 5, border: "2px dashed #0ea5e9", borderRadius: "50%", animation: "cgSpin2 12s linear infinite" }} />
                       <div style={{ position: "absolute", inset: 5, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin3 10s linear infinite" }} />
                       <div style={{ position: "absolute", inset: 5, border: "2px solid #0ea5e9", borderRadius: "50%", animation: "cgSpin4 15s linear infinite" }} />
                     </div>
@@ -119,7 +111,7 @@ export default function Landing({ onEnter }) {
                   </div>
 
                   <button className="pixel-pc-enter-btn" onClick={onEnter}>
-                    <div className="glitch-text" style={{ fontSize: 20, letterSpacing: "2px" }} data-text="[ ENTER PORTAL ]">[ ENTER PORTAL ]</div>
+                    <div style={{ fontSize: 20, letterSpacing: "2px" }}>[ ENTER PORTAL ]</div>
                     <div className="pc-cursor-blink">-</div>
                   </button>
 
@@ -129,7 +121,7 @@ export default function Landing({ onEnter }) {
 
             {/* Base / PC Case */}
             <div className="pc-base">
-              <div className="pc-drive-slot broken"></div>
+              <div className="pc-drive-slot"></div>
               <div className="pc-drive-btn"></div>
             </div>
           </div>
@@ -137,11 +129,9 @@ export default function Landing({ onEnter }) {
           <div className="pixel-pc-peripherals">
             <div className="pixel-pc-keyboard">
               <div className="pc-keys"></div>
-              <div className="pc-popped-key-hole"></div>
-              <div className="pc-loose-key"></div>
             </div>
             <div className="pixel-pc-mouse">
-              <div className="pc-mouse-wire broken"></div>
+              <div className="pc-mouse-wire"></div>
             </div>
           </div>
           </div>
