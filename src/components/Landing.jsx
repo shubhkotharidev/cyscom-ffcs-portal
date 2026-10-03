@@ -76,7 +76,7 @@ export default function Landing({ onEnter }) {
                 <div className="pc-pen pen-3"></div>
               </div>
               <div className="pc-pen-cup">
-                <img src="/logo1.png" style={{ width: 24, marginTop: 24, opacity: 0.9 }} alt="" />
+                <img src="/logo1.png" style={{ width: 24, opacity: 0.9 }} alt="" />
               </div>
             </div>
 

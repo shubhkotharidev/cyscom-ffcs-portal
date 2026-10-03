@@ -719,6 +719,7 @@ export default function GlobalStyle() {
         box-shadow: inset -4px 0 0 rgba(0,0,0,0.5), 4px 4px 0px rgba(0,0,0,0.15);
         display: flex;
         justify-content: center;
+        align-items: center;
         position: relative;
         z-index: 2;
         overflow: hidden;
