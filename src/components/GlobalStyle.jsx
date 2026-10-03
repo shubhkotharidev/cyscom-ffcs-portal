@@ -681,7 +681,7 @@ export default function GlobalStyle() {
         box-shadow: 8px 8px 0px #1a1a1a;
         position: relative;
         z-index: 4;
-        margin-top: -12px; 
+        margin-top: 4px;
         display: flex;
         align-items: center;
         padding: 0 20px;
