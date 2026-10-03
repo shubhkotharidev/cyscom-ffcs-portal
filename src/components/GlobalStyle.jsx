@@ -590,16 +590,14 @@ export default function GlobalStyle() {
          and runs roughly 20%–80% horizontally. */
       .binary-pc-overlay {
         position: absolute;
-        top: 8%;
+        top: 10%;
         left: 20%;
         width: 58%;
         height: 42%;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        gap: 12px;
-        padding-top: 8%;
+        justify-content: space-evenly;
       }
       .binary-dyson {
         position: relative;
@@ -614,19 +612,19 @@ export default function GlobalStyle() {
         color: #0ea5e9;
         font-family: 'JetBrains Mono', monospace;
         font-weight: 800;
-        font-size: clamp(9px, 1.8vw, 12px);
-        letter-spacing: 1px;
+        font-size: clamp(11px, 2.5vw, 16px);
+        letter-spacing: 2px;
         cursor: pointer;
         outline: none;
-        padding: 4px 10px;
+        padding: 6px 12px;
         border-radius: 4px;
-        box-shadow: 0 0 8px rgba(14,165,233,0.4);
+        box-shadow: 0 0 10px rgba(14,165,233,0.4);
         transition: all 0.15s ease;
       }
       .binary-enter-btn:hover {
         background: #0ea5e9;
         color: #fff;
-        box-shadow: 0 0 16px rgba(14,165,233,0.7);
+        box-shadow: 0 0 20px rgba(14,165,233,0.7);
       }
       @media (max-width: 500px) {
         .binary-dyson { width: 64px; height: 64px; }
