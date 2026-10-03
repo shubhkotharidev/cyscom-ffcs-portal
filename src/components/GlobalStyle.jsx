@@ -578,6 +578,16 @@ export default function GlobalStyle() {
         flex-direction: column;
         align-items: center;
         position: relative;
+        transform: scale(1.2);
+        transform-origin: top center;
+        margin-top: 40px;
+      }
+      @media (max-width: 600px) {
+        .pixel-pc-setup {
+          transform: scale(0.65);
+          margin-top: 20px;
+          margin-bottom: -150px;
+        }
       }
       .pixel-pc-container {
         display: flex;
