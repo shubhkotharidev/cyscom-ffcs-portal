@@ -573,118 +573,235 @@ export default function GlobalStyle() {
         flex-wrap: wrap;
         gap: 40px;
       }
-      .pixel-pc {
-        width: 240px;
-        height: 200px;
-        border: 4px solid #000;
-        background: #e0e0e0;
-        box-shadow: 12px 12px 0px #000;
-        position: relative;
+      .pixel-pc-setup {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 16px;
-        border-radius: 4px;
+        position: relative;
+      }
+      .pixel-pc-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 5;
+      }
+      .pixel-pc {
+        width: 340px;
+        height: 260px;
+        background: #e8e6df;
+        border: 4px solid #1a1a1a;
+        border-radius: 24px;
+        padding: 24px 20px;
+        box-shadow: inset -4px -4px 0 rgba(0,0,0,0.1), 8px 8px 0px #1a1a1a;
+        position: relative;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+      }
+      .pixel-pc::before {
+        content: "";
+        position: absolute;
+        top: 60px;
+        left: -4px;
+        width: 8px;
+        height: 80px;
+        background: #1a1a1a;
+        border-radius: 4px 0 0 4px;
+      }
+      .pc-screen-bezel {
+        width: 100%;
+        height: 100%;
+        background: #c8c5bc;
+        border: 4px solid #1a1a1a;
+        border-radius: 12px;
+        padding: 10px;
+        box-shadow: inset 4px 4px 0 rgba(0,0,0,0.15);
       }
       .pixel-pc-screen {
         width: 100%;
-        height: 220px;
-        background: #000;
-        border: 4px solid #000;
-        border-radius: 4px;
+        height: 100%;
+        background: #1e2124;
+        border: 2px solid #1a1a1a;
+        border-radius: 8px;
         position: relative;
         overflow: hidden;
         display: flex;
-        padding: 12px;
+        padding: 16px;
+        box-shadow: inset 0 0 24px rgba(0,0,0,0.9);
       }
-      .pixel-pc-text {
-        color: #39ff14;
+      .pc-sticky-note {
+        position: absolute;
+        left: -20px;
+        top: 30px;
+        background: #fce883;
+        border: 2px solid #1a1a1a;
+        padding: 6px 4px;
         font-family: 'JetBrains Mono', monospace;
+        font-size: 8px;
         font-weight: 800;
-        font-size: 16px;
-        animation: blink 1s step-end infinite;
+        color: #1a1a1a;
+        text-align: center;
+        line-height: 1.3;
+        transform: rotate(-6deg);
+        box-shadow: 2px 2px 0px #1a1a1a;
+        z-index: 10;
+        width: 48px;
       }
-      .pixel-pc-drive {
-        width: 80px;
+      .pc-base {
+        width: 360px;
+        height: 50px;
+        background: #e8e6df;
+        border: 4px solid #1a1a1a;
+        border-radius: 8px;
+        box-shadow: 8px 8px 0px #1a1a1a;
+        position: relative;
+        z-index: 4;
+        margin-top: -12px; 
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        justify-content: flex-end;
+      }
+      .pc-drive-slot {
+        width: 60px;
         height: 8px;
-        background: #000;
-        margin-top: 20px;
-        align-self: flex-end;
-        margin-right: 20px;
+        background: #1a1a1a;
+        border-radius: 4px;
+        box-shadow: inset 0 2px 0 rgba(0,0,0,0.5);
       }
-      .pixel-pc-drive-btn {
+      .pc-drive-btn {
         width: 8px;
         height: 8px;
-        background: #000;
-        position: absolute;
-        bottom: 24px;
-        right: 16px;
+        background: #1a1a1a;
+        margin-left: 12px;
+        border-radius: 50%;
       }
+      .pc-pen-stand {
+        position: absolute;
+        left: -70px;
+        bottom: 0px; 
+        z-index: 6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .pc-pen-cup {
+        width: 45px;
+        height: 60px;
+        background: #2a2a2a;
+        border: 3px solid #1a1a1a;
+        border-radius: 4px 4px 12px 12px;
+        box-shadow: inset -4px 0 0 rgba(0,0,0,0.5), 4px 4px 0px rgba(0,0,0,0.15);
+        display: flex;
+        justify-content: center;
+        position: relative;
+        z-index: 2;
+        overflow: hidden;
+      }
+      .pc-pens {
+        display: flex;
+        gap: 4px;
+        margin-bottom: -10px; 
+        z-index: 1;
+      }
+      .pc-pen {
+        width: 6px;
+        height: 40px;
+        background: #e0e0e0;
+        border: 2px solid #1a1a1a;
+        border-radius: 4px 4px 0 0;
+      }
+      .pc-pen.pen-1 { transform: rotate(-15deg) translateY(5px); background: #fce883; }
+      .pc-pen.pen-2 { transform: rotate(5deg) translateY(-2px); background: #fff; }
+      .pc-pen.pen-3 { transform: rotate(20deg) translateY(8px); background: #a9a9a9; }
       .pixel-pc-enter-btn {
         background: transparent;
         border: none;
         color: #39ff14;
         font-family: 'JetBrains Mono', monospace;
         font-weight: 800;
-        font-size: 16px;
         cursor: pointer;
         outline: none;
         text-align: center;
         padding: 0;
         margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       .pixel-pc-enter-btn:hover {
         color: #fff;
         text-shadow: 0 0 5px #39ff14;
       }
+      .pc-cursor-blink {
+        color: #39ff14;
+        font-weight: 900;
+        font-size: 24px;
+        line-height: 0.5;
+        margin-top: 12px;
+        animation: blink 1s step-end infinite;
+      }
       @keyframes blink {
         50% { opacity: 0; }
-      }
-
-      /* PC Peripherals */
-      .pixel-pc-setup {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
       }
       .pixel-pc-peripherals {
         display: flex;
         align-items: flex-end;
         gap: 20px;
+        position: relative;
+        z-index: 6;
       }
       .pixel-pc-keyboard {
-        width: 180px;
-        height: 48px;
-        background: #e0e0e0;
-        border: 4px solid #000;
-        box-shadow: 6px 6px 0px #000;
-        border-radius: 4px;
+        width: 260px;
+        height: 64px;
+        background: #e8e6df;
+        border: 4px solid #1a1a1a;
+        border-radius: 8px;
+        box-shadow: inset -2px -4px 0 rgba(0,0,0,0.1), 6px 6px 0px #1a1a1a;
         position: relative;
+        transform: perspective(400px) rotateX(25deg); 
+        margin-top: 20px;
+        display: flex;
+        padding: 6px 8px 10px 8px;
+      }
+      .pc-keys {
+        width: 100%;
+        height: 100%;
         background-image: 
-          repeating-linear-gradient(90deg, transparent, transparent 12px, #000 12px, #000 16px),
-          repeating-linear-gradient(0deg, transparent, transparent 12px, #000 12px, #000 16px);
-        background-position: 0 0;
-        background-size: 100% 100%;
+          repeating-linear-gradient(90deg, transparent, transparent 12px, #1a1a1a 12px, #1a1a1a 14px),
+          repeating-linear-gradient(0deg, transparent, transparent 12px, #1a1a1a 12px, #1a1a1a 14px);
+        opacity: 0.6;
       }
       .pixel-pc-mouse {
-        width: 32px;
-        height: 48px;
-        background: #e0e0e0;
-        border: 4px solid #000;
-        box-shadow: 4px 4px 0px #000;
-        border-radius: 12px;
+        width: 40px;
+        height: 56px;
+        background: #e8e6df;
+        border: 4px solid #1a1a1a;
+        border-radius: 16px 16px 20px 20px;
+        box-shadow: inset -2px -2px 0 rgba(0,0,0,0.1), 4px 4px 0px #1a1a1a;
         position: relative;
+        margin-top: 30px; 
+        margin-left: 10px;
       }
       .pixel-pc-mouse::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 50%;
-        width: 4px;
-        height: 16px;
-        background: #000;
+        top: 0; left: 50%;
         transform: translateX(-50%);
+        width: 2px; height: 16px;
+        background: #1a1a1a;
+      }
+      .pc-mouse-wire {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        width: 50px;
+        height: 30px;
+        border-left: 2px solid #1a1a1a;
+        border-top: 2px solid #1a1a1a;
+        border-radius: 10px 0 0 0;
+        z-index: -1;
       }
 
       .quick-links-bar {
