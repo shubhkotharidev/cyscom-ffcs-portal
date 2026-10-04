@@ -73,7 +73,7 @@ router.post('/departments', authenticateToken, async (req, res) => {
     }
 
     // Check capacity limits inside the transaction (counts are now consistent)
-    const LIMITS = { tech: 25, webdev: 25, events: 25, design: 15, social: 15, outreach: 5 };
+    const LIMITS = { tech: 25, webdev: 25, events: 38, design: 15, social: 15, outreach: 5 };
 
     for (const d of departments) {
       const countRes = await client.query(
