@@ -22,6 +22,8 @@ const configureHelmet = () => helmet({
 const configureCors = () => {
   const allowedOrigins = [
     process.env.CLIENT_URL || 'http://localhost:5173',
+    'https://cyscomffcs.cyscomvit.com',
+    'http://cyscomffcs.cyscomvit.com',
     'https://cyscom-ffcs-portal.vercel.app',
     'http://cyscom-ffcs-portal.vercel.app',
     'http://localhost:3000',
@@ -30,7 +32,7 @@ const configureCors = () => {
   ];
   return cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (Vercel serverless functions, curl, etc.)
+      // Allow requests with no origin (Vercel serverless, curl, etc.)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -43,22 +45,34 @@ const configureCors = () => {
   });
 };
 
-// 3. Rate Limiters (DDoS & Brute-Force Defense)
+// 3. Rate Limiters
+//
+// IMPORTANT: On campus networks all students share the SAME public IP (NAT).
+// 80 users × ~5 requests each = 400 requests in a short burst from one IP.
+// Old limit of 100/15min was killing everyone.
+//
+// Fix: raise general API limit to 500/15min (still blocks real DDoS).
+// Auth limiter: raised to 50/15min (one student does ~2 auth calls to log in).
+// Both skip Vercel's x-forwarded-for so they key on the real origin IP.
+
 const apiRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000,   // 15 minutes
+  max: 500,                    // 500 req/IP/window — covers 80 students @ ~6 calls each
   standardHeaders: true,
   legacyHeaders: false,
+  // On Vercel behind a proxy, trust the forwarded IP
+  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip,
   message: {
     error: 'Too many requests from this IP address. Please try again after 15 minutes.',
   },
 });
 
 const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit login attempts to 10 per 15 minutes
+  windowMs: 15 * 60 * 1000,   // 15 minutes
+  max: 50,                     // 50 login attempts per IP per window
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip,
   message: {
     error: 'Too many authentication attempts. Please try again after 15 minutes.',
   },

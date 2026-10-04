@@ -12,14 +12,19 @@ if (!connectionString) {
 
 const isLocalhost = connectionString.includes('localhost') || connectionString.includes('127.0.0.1');
 
+// On Vercel serverless, each function instance is a separate process.
+// Keep pool size small per-instance (2-3) so we don't exhaust Neon's
+// connection limit across many concurrent instances.
+// Neon free tier allows ~100 connections total.
+// With up to 10 Vercel instances × 3 connections = 30 max — safe headroom.
 const pool = new Pool({
   connectionString,
   ssl: isLocalhost
     ? false
-    : { rejectUnauthorized: true }, // Enforce valid TLS certificate for cloud DBs
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+    : { rejectUnauthorized: true },
+  max: 3,                        // Per-instance pool size (serverless-safe)
+  idleTimeoutMillis: 10000,      // Release idle connections faster (was 30s)
+  connectionTimeoutMillis: 5000, // Fail fast if DB is unreachable (was 10s)
 });
 
 pool.on('error', (err) => {
@@ -30,4 +35,3 @@ module.exports = {
   query: (text, params) => pool.query(text, params),
   pool,
 };
-

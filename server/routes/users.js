@@ -5,28 +5,34 @@ const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/users (Leaderboard / Users list, sorted by points DESC)
+// Fix: use a single JOIN query instead of N+1 per-user contribution queries
 router.get('/', authenticateToken, async (req, res) => {
   try {
+    // Fetch all users
     const usersRes = await db.query(
       `SELECT id, email, name, reg_no AS "regNo", role, points, locked, excluded, departments, created_at
        FROM users
        ORDER BY points DESC, name ASC`
     );
 
-    // Attach contribution history to each user
-    const users = await Promise.all(
-      usersRes.rows.map(async (u) => {
-        const contribs = await db.query(
-          `SELECT title, points, date FROM contributions WHERE user_email = $1 ORDER BY id DESC`,
-          [u.email]
-        );
-        return {
-          ...u,
-          departments: u.departments || [],
-          contributions: contribs.rows || [],
-        };
-      })
+    if (usersRes.rows.length === 0) return res.json([]);
+
+    // Fetch ALL contributions in one query, then group in JS (eliminates N+1)
+    const contribsRes = await db.query(
+      `SELECT user_email, title, points, date FROM contributions ORDER BY id DESC`
     );
+
+    const contribMap = {};
+    for (const row of contribsRes.rows) {
+      if (!contribMap[row.user_email]) contribMap[row.user_email] = [];
+      contribMap[row.user_email].push({ title: row.title, points: row.points, date: row.date });
+    }
+
+    const users = usersRes.rows.map((u) => ({
+      ...u,
+      departments: u.departments || [],
+      contributions: contribMap[u.email] || [],
+    }));
 
     return res.json(users);
   } catch (err) {
@@ -36,7 +42,10 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // POST /api/users/departments (Member lock 2 department preferences)
+// Fix: use a DB transaction with SELECT FOR UPDATE to prevent race conditions
+// where multiple users simultaneously see a seat as available and all try to claim it.
 router.post('/departments', authenticateToken, async (req, res) => {
+  const client = await db.pool.connect();
   try {
     const { departments } = req.body;
     if (!Array.isArray(departments) || departments.length !== 2) {
@@ -51,35 +60,47 @@ router.post('/departments', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Please select 2 distinct departments.' });
     }
 
-    // Check if user is already locked
-    const userRes = await db.query(`SELECT locked FROM users WHERE email = $1`, [req.user.email]);
+    await client.query('BEGIN');
+
+    // Lock this user's row so concurrent requests for the same user are serialized
+    const userRes = await client.query(
+      `SELECT locked FROM users WHERE email = $1 FOR UPDATE`,
+      [req.user.email]
+    );
     if (userRes.rows.length > 0 && userRes.rows[0].locked) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Your departments are already locked.' });
     }
 
-    // Check capacity limits
+    // Check capacity limits inside the transaction (counts are now consistent)
     const LIMITS = { tech: 15, webdev: 15, events: 15, design: 5, social: 5, outreach: 5 };
-    
+
     for (const d of departments) {
-      const countRes = await db.query(
+      const countRes = await client.query(
         `SELECT COUNT(*) FROM users WHERE $1 = ANY(departments)`,
         [d]
       );
       const currentCount = parseInt(countRes.rows[0].count, 10);
       if (currentCount >= LIMITS[d]) {
-        return res.status(400).json({ error: `Department '${d}' has reached its capacity.` });
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: `Department '${d}' is now full. Please choose another.` });
       }
     }
 
-    await db.query(
+    // Atomically lock and assign
+    await client.query(
       `UPDATE users SET departments = $1, locked = true WHERE email = $2`,
       [departments, req.user.email]
     );
 
+    await client.query('COMMIT');
     return res.json({ success: true, departments });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('Lock departments error:', err);
     return res.status(500).json({ error: 'Failed to lock department selections.' });
+  } finally {
+    client.release();
   }
 });
 
@@ -104,10 +125,7 @@ router.post('/assign-points', authenticateToken, async (req, res) => {
 
     const today = new Date().toISOString().slice(0, 10);
 
-    // Update user total points
     await db.query(`UPDATE users SET points = points + $1 WHERE email = $2`, [pts, email]);
-
-    // Insert contribution record
     await db.query(
       `INSERT INTO contributions (user_email, title, points, date) VALUES ($1, $2, $3, $4)`,
       [email, title.trim(), pts, today]
@@ -119,7 +137,6 @@ router.post('/assign-points', authenticateToken, async (req, res) => {
     return res.status(500).json({ error: 'Failed to assign task points.' });
   }
 });
-
 
 // POST /api/users/toggle-exclusion (Super Admin toggle Leaderboard exclusion)
 router.post('/toggle-exclusion', authenticateToken, requireSuperAdmin, async (req, res) => {
@@ -156,7 +173,7 @@ router.post('/manage-departments', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: 'Invalid departments selection.' });
     }
 
-    const VALID_DEPTS = ['webdev', 'tech', 'design', 'social', 'events'];
+    const VALID_DEPTS = ['webdev', 'tech', 'design', 'social', 'events', 'outreach'];
     if (!departments.every((d) => VALID_DEPTS.includes(d))) {
       return res.status(400).json({ error: 'Invalid department selection.' });
     }

@@ -43,22 +43,18 @@ router.post('/login', authRateLimiter, async (req, res) => {
     const isSuperAdmin = SUPER_ADMIN_EMAILS.map((e) => e.toLowerCase()).includes(cleanEmail);
     const assignedRole = isSuperAdmin ? 'super_admin' : 'member';
 
-    // 100% Parameterized SQL Query (Injection Safe)
-    const existing = await db.query('SELECT * FROM users WHERE email = $1', [cleanEmail]);
+    // Atomic upsert — prevents duplicate key errors when two logins for the
+    // same new user arrive at the same millisecond (race condition on signup).
+    const id = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    await db.query(
+      `INSERT INTO users (id, email, name, reg_no, role, points, locked, departments)
+       VALUES ($1, $2, $3, $4, $5, 0, false, '{}')
+       ON CONFLICT (email) DO NOTHING`,
+      [id, cleanEmail, cleanName, cleanRegNo, assignedRole]
+    );
 
-    let user;
-    if (existing.rows.length === 0) {
-      const id = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-      const inserted = await db.query(
-        `INSERT INTO users (id, email, name, reg_no, role, points, locked, departments)
-         VALUES ($1, $2, $3, $4, $5, 0, false, '{}')
-         RETURNING *`,
-        [id, cleanEmail, cleanName, cleanRegNo, assignedRole]
-      );
-      user = inserted.rows[0];
-    } else {
-      user = existing.rows[0];
-    }
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [cleanEmail]);
+    const user = result.rows[0];
 
     // Issue JWT Token (expires in 7 days)
     const token = jwt.sign(
