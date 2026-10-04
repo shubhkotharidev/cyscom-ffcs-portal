@@ -5,7 +5,7 @@ export default function Departments({ user, users = [], onLock }) {
   const [selected, setSelected] = useState(user.departments || []);
   const [blocked, setBlocked] = useState(false);
 
-  const LIMITS = { tech: 32, webdev: 20, events: 35, design: 20, social: 20, outreach: 3 };
+  const LIMITS = { tech: 25, webdev: 25, events: 25, design: 15, social: 15, outreach: 3 };
 
   function toggle(id) {
     if (user.locked) return;
