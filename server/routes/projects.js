@@ -280,4 +280,102 @@ router.post('/requests/:reqId/reject', authenticateToken, async (req, res) => {
   }
 });
 
+// POST /api/projects/:id/members/add  (SuperAdmin — manually add user to project)
+router.post('/:id/members/add', authenticateToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email || !email.trim()) {
+      return res.status(400).json({ error: 'User email is required.' });
+    }
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Verify project exists
+    const projRes = await db.query('SELECT * FROM projects WHERE id = $1', [id]);
+    if (projRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Project not found.' });
+    }
+    const proj = projRes.rows[0];
+    const applicants = proj.applicants || [];
+
+    // Already a member?
+    if (applicants.includes(cleanEmail)) {
+      return res.status(409).json({ error: 'This user is already a member of this project.' });
+    }
+
+    // Verify user exists in the system
+    const userRes = await db.query('SELECT name, reg_no FROM users WHERE email = $1', [cleanEmail]);
+    if (userRes.rows.length === 0) {
+      return res.status(404).json({ error: 'No registered user found with that email.' });
+    }
+
+    // Add to project applicants and increment seats_filled
+    const updated = await db.query(
+      `UPDATE projects
+       SET seats_filled = seats_filled + 1,
+           applicants   = array_append(applicants, $1)
+       WHERE id = $2
+       RETURNING id, title, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
+      [cleanEmail, id]
+    );
+
+    // Also upsert an approved project_request record for consistency
+    const today = new Date().toISOString().slice(0, 10);
+    const user  = userRes.rows[0];
+    const reqId = `pr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    await db.query(
+      `INSERT INTO project_requests
+         (id, project_id, user_email, user_name, reg_no, status, requested_at, reviewed_by, reviewed_at)
+       VALUES ($1, $2, $3, $4, $5, 'approved', $6, $7, $6)
+       ON CONFLICT DO NOTHING`,
+      [reqId, id, cleanEmail, user.name, user.reg_no, today, req.user.name || 'Super Admin']
+    );
+
+    return res.json({ success: true, project: updated.rows[0] });
+  } catch (err) {
+    console.error('Add project member error:', err);
+    return res.status(500).json({ error: 'Failed to add member to project.' });
+  }
+});
+
+// DELETE /api/projects/:id/members/:email  (SuperAdmin — remove user from project)
+router.delete('/:id/members/:email', authenticateToken, requireSuperAdmin, async (req, res) => {
+  try {
+    const { id, email } = req.params;
+    const cleanEmail = decodeURIComponent(email).trim().toLowerCase();
+
+    // Verify project exists and user is in it
+    const projRes = await db.query('SELECT applicants FROM projects WHERE id = $1', [id]);
+    if (projRes.rows.length === 0) {
+      return res.status(404).json({ error: 'Project not found.' });
+    }
+    const applicants = projRes.rows[0].applicants || [];
+    if (!applicants.includes(cleanEmail)) {
+      return res.status(404).json({ error: 'This user is not a member of this project.' });
+    }
+
+    // Remove from applicants and decrement seats_filled
+    const updated = await db.query(
+      `UPDATE projects
+       SET seats_filled = GREATEST(seats_filled - 1, 0),
+           applicants   = array_remove(applicants, $1)
+       WHERE id = $2
+       RETURNING id, title, seats_total AS "seatsTotal", seats_filled AS "seatsFilled", applicants`,
+      [cleanEmail, id]
+    );
+
+    // Remove their approved project_request record so they can re-apply later if needed
+    await db.query(
+      `DELETE FROM project_requests WHERE project_id = $1 AND user_email = $2`,
+      [id, cleanEmail]
+    );
+
+    return res.json({ success: true, project: updated.rows[0] });
+  } catch (err) {
+    console.error('Remove project member error:', err);
+    return res.status(500).json({ error: 'Failed to remove member from project.' });
+  }
+});
+
 module.exports = router;

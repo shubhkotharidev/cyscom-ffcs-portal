@@ -278,9 +278,114 @@ function ProjectModal({ project, onSave, onClose }) {
   );
 }
 
-function ProjectsTab({ projects, onAdd, onEdit, onDelete, isSuperAdmin }) {
+/* ══════════════════════════════════════════════════════════════════════ */
+/* Manage Project Members Modal (SuperAdmin only)                         */
+/* ══════════════════════════════════════════════════════════════════════ */
+
+function ManageMembersModal({ project, users, onAdd, onRemove, onClose }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  const members = project.applicants || [];
+
+  // Build a lookup: email → user name for display
+  const userMap = {};
+  (users || []).forEach((u) => { userMap[u.email] = u.name; });
+
+  async function handleAdd(e) {
+    e.preventDefault();
+    const email = emailInput.trim().toLowerCase();
+    if (!email) return;
+    setErr("");
+    setLoading(true);
+    try {
+      await onAdd(project.id, email);
+      setEmailInput("");
+    } catch (e) {
+      setErr(e.message || "Failed to add member.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return createPortal(
+    <div className="cg-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="cg-modal" style={{ maxWidth: 480, width: "100%" }}>
+        <button className="cg-modal-close" onClick={onClose}>✕</button>
+        <div className="cg-label" style={{ marginBottom: 4 }}>MANAGE MEMBERS</div>
+        <div className="cg-display" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
+          {project.title}
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-dim)", marginBottom: 20 }}>
+          {members.length} / {project.seatsTotal} seats filled
+        </div>
+
+        {/* Add member */}
+        <form onSubmit={handleAdd} style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <input
+            className="cg-input"
+            style={{ flex: 1, fontSize: 12 }}
+            type="email"
+            placeholder="member@vitstudent.ac.in"
+            value={emailInput}
+            onChange={(e) => setEmailInput(e.target.value)}
+            disabled={loading}
+          />
+          <button className="cg-btn cg-btn-super cg-btn-sm" type="submit" disabled={loading || !emailInput.trim()}>
+            {loading ? "…" : "+ ADD"}
+          </button>
+        </form>
+        {err && <div style={{ fontSize: 11, color: "var(--danger)", marginBottom: 12 }}>{err}</div>}
+
+        {/* Current members list */}
+        {members.length === 0 ? (
+          <div className="cg-empty" style={{ fontSize: 12 }}>No members yet.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 300, overflowY: "auto" }}>
+            {members.map((email) => (
+              <div
+                key={email}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "8px 12px", border: "1px solid var(--border)", borderRadius: 4, gap: 8
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {userMap[email] || email}
+                  </div>
+                  {userMap[email] && (
+                    <div style={{ fontSize: 10, color: "var(--text-dim)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {email}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="cg-btn cg-btn-danger cg-btn-sm"
+                  style={{ flexShrink: 0 }}
+                  onClick={() => {
+                    if (window.confirm(`Remove ${userMap[email] || email} from this project?`)) {
+                      onRemove(project.id, email);
+                    }
+                  }}
+                >
+                  REMOVE
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function ProjectsTab({ projects, users, onAdd, onEdit, onDelete, onAddMember, onRemoveMember, isSuperAdmin }) {
   const [modal, setModal] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
+  const [membersProject, setMembersProject] = useState(null);
 
   return (
     <div>
@@ -318,6 +423,7 @@ function ProjectsTab({ projects, onAdd, onEdit, onDelete, isSuperAdmin }) {
                 <div className="cg-proj-actions">
                   {isSuperAdmin ? (
                     <>
+                      <button className="cg-btn cg-btn-sm" onClick={() => setMembersProject(p)}>MEMBERS</button>
                       <button className="cg-btn cg-btn-sm" onClick={() => setModal(p)}>EDIT</button>
                       <button className="cg-btn cg-btn-danger cg-btn-sm" onClick={() => setConfirmDelete(p)}>DEL</button>
                     </>
@@ -336,6 +442,16 @@ function ProjectsTab({ projects, onAdd, onEdit, onDelete, isSuperAdmin }) {
           project={modal === "new" ? null : modal}
           onSave={modal === "new" ? onAdd : onEdit}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {membersProject && (
+        <ManageMembersModal
+          project={membersProject}
+          users={users}
+          onAdd={async (pid, email) => { await onAddMember(pid, email); setMembersProject((prev) => ({ ...prev, applicants: [...(prev.applicants || []), email], seatsFilled: (prev.seatsFilled || 0) + 1 })); }}
+          onRemove={async (pid, email) => { await onRemoveMember(pid, email); setMembersProject((prev) => ({ ...prev, applicants: (prev.applicants || []).filter((e) => e !== email), seatsFilled: Math.max(0, (prev.seatsFilled || 0) - 1) })); }}
+          onClose={() => setMembersProject(null)}
         />
       )}
 
@@ -706,6 +822,8 @@ export default function SuperAdmin({
   onUpdateDepartments,
   onApproveRequest,
   onRejectRequest,
+  onAddProjectMember,
+  onRemoveProjectMember,
 }) {
   const [tab, setTab] = useState("projects");
   const pendingCount = (pending || []).filter((p) => p.status === "pending").length;
@@ -754,9 +872,12 @@ export default function SuperAdmin({
       {tab === "projects" && (
         <ProjectsTab
           projects={projects}
+          users={users}
           onAdd={onAddProject}
           onEdit={onEditProject}
           onDelete={onDeleteProject}
+          onAddMember={onAddProjectMember}
+          onRemoveMember={onRemoveProjectMember}
           isSuperAdmin={true}
         />
       )}

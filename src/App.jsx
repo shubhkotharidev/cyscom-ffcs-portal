@@ -264,6 +264,26 @@ export default function App() {
     }
   }
 
+  /* ── Add member to project (super_admin) ── */
+  async function handleAddProjectMember(projectId, email) {
+    try {
+      await apiCall(`/projects/${projectId}/members/add`, "POST", { email });
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  /* ── Remove member from project (super_admin) ── */
+  async function handleRemoveProjectMember(projectId, email) {
+    try {
+      await apiCall(`/projects/${projectId}/members/${encodeURIComponent(email)}`, "DELETE");
+      await refreshData();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
   /* ── Loading ── */
   if (!ready) {
     return (
@@ -336,6 +356,8 @@ export default function App() {
                 onUpdateDepartments={handleUpdateUserDepartments}
                 onApproveRequest={handleApproveRequest}
                 onRejectRequest={handleRejectRequest}
+                onAddProjectMember={handleAddProjectMember}
+                onRemoveProjectMember={handleRemoveProjectMember}
               />
             )}
             {tab === "admin" && currentUser.role === "admin" && (
