@@ -337,7 +337,7 @@ export default function App() {
               />
             )}
             {tab === "departments" && <Departments user={currentUser} users={users} onLock={handleLockDepartments} />}
-            {tab === "projects" && <Projects user={currentUser} projects={projects} projectRequests={projectRequests} onRequest={handleRequestJoin} />}
+            {tab === "projects" && <Projects user={currentUser} projects={projects} projectRequests={projectRequests} users={users} onRequest={handleRequestJoin} />}
             {tab === "leaderboard" && <Leaderboard users={users} currentEmail={sessionEmail} />}
             {tab === "superadmin" && currentUser.role === "super_admin" && (
               <SuperAdmin
