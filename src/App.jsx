@@ -373,6 +373,8 @@ export default function App() {
                 onUpdateDepartments={handleUpdateUserDepartments}
                 onApproveRequest={handleApproveRequest}
                 onRejectRequest={handleRejectRequest}
+                onAddProjectMember={handleAddProjectMember}
+                onRemoveProjectMember={handleRemoveProjectMember}
               />
             )}
           </Shell>

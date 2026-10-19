@@ -396,15 +396,118 @@ function AdminUsersTab({ users, currentEmail, onAssignPoints, onUpdateDepartment
 }
 
 /* ══════════════════════════════════════════════════════════════════════ */
-/* Read-Only Projects Tab (Admin)                                         */
+/* Manage Project Members Modal (Admin)                                   */
 /* ══════════════════════════════════════════════════════════════════════ */
 
-function AdminProjectsTab({ projects }) {
+function AdminManageMembersModal({ project, users, onAdd, onRemove, onClose }) {
+  const [emailInput, setEmailInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  const members = project.applicants || [];
+
+  const userMap = {};
+  (users || []).forEach((u) => { userMap[u.email] = u.name; });
+
+  async function handleAdd(e) {
+    e.preventDefault();
+    const email = emailInput.trim().toLowerCase();
+    if (!email) return;
+    setErr("");
+    setLoading(true);
+    try {
+      await onAdd(project.id, email);
+      setEmailInput("");
+    } catch (e) {
+      setErr(e.message || "Failed to add member.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return createPortal(
+    <div className="cg-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="cg-modal" style={{ maxWidth: 480, width: "100%" }}>
+        <button className="cg-modal-close" onClick={onClose}>✕</button>
+        <div className="cg-label" style={{ marginBottom: 4 }}>MANAGE MEMBERS</div>
+        <div className="cg-display" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>
+          {project.title}
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-dim)", marginBottom: 20 }}>
+          {members.length} / {project.seatsTotal} seats filled
+        </div>
+
+        <form onSubmit={handleAdd} style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <input
+            className="cg-input"
+            style={{ flex: 1, fontSize: 12 }}
+            type="email"
+            placeholder="member@vitstudent.ac.in"
+            value={emailInput}
+            onChange={(e) => setEmailInput(e.target.value)}
+            disabled={loading}
+          />
+          <button className="cg-btn cg-btn-solid cg-btn-sm" type="submit" disabled={loading || !emailInput.trim()}>
+            {loading ? "…" : "+ ADD"}
+          </button>
+        </form>
+        {err && <div style={{ fontSize: 11, color: "var(--danger)", marginBottom: 12 }}>{err}</div>}
+
+        {members.length === 0 ? (
+          <div className="cg-empty" style={{ fontSize: 12 }}>No members yet.</div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 300, overflowY: "auto" }}>
+            {members.map((email) => (
+              <div
+                key={email}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  padding: "8px 12px", border: "1px solid var(--border)", borderRadius: 4, gap: 8
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {userMap[email] || email}
+                  </div>
+                  {userMap[email] && (
+                    <div style={{ fontSize: 10, color: "var(--text-dim)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {email}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="cg-btn cg-btn-danger cg-btn-sm"
+                  style={{ flexShrink: 0 }}
+                  onClick={() => {
+                    if (window.confirm(`Remove ${userMap[email] || email} from this project?`)) {
+                      onRemove(project.id, email);
+                    }
+                  }}
+                >
+                  REMOVE
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════ */
+/* Projects Tab (Admin) — with member management                          */
+/* ══════════════════════════════════════════════════════════════════════ */
+
+function AdminProjectsTab({ projects, users, onAddMember, onRemoveMember }) {
+  const [membersProject, setMembersProject] = useState(null);
+
   return (
     <div>
       <div className="cg-admin-controls">
         <div className="cg-label" style={{ fontSize: 12, color: "var(--text-dim)" }}>
-          PROJECT CATALOG ({projects.length}) · <span style={{ color: "var(--accent)" }}>VIEW ONLY MODE</span>
+          PROJECT CATALOG ({projects.length})
         </div>
       </div>
 
@@ -412,7 +515,7 @@ function AdminProjectsTab({ projects }) {
         <div className="cg-proj-row" style={{ cursor: "default" }}>
           <div className="cg-label">TITLE</div>
           <div className="cg-label">SEATS</div>
-          <div className="cg-label">ACCESS</div>
+          <div className="cg-label">ACTIONS</div>
         </div>
         {projects.length === 0 ? (
           <div className="cg-empty">No projects created yet.</div>
@@ -431,13 +534,23 @@ function AdminProjectsTab({ projects }) {
                   <span style={{ color: "var(--text-dim)" }}>/{p.seatsTotal}</span>
                 </div>
                 <div className="cg-proj-actions">
-                  <span className="cg-badge cg-badge-member">View Only</span>
+                  <button className="cg-btn cg-btn-sm" onClick={() => setMembersProject(p)}>MEMBERS</button>
                 </div>
               </div>
             );
           })
         )}
       </div>
+
+      {membersProject && (
+        <AdminManageMembersModal
+          project={membersProject}
+          users={users}
+          onAdd={async (pid, email) => { await onAddMember(pid, email); setMembersProject((prev) => ({ ...prev, applicants: [...(prev.applicants || []), email], seatsFilled: (prev.seatsFilled || 0) + 1 })); }}
+          onRemove={async (pid, email) => { await onRemoveMember(pid, email); setMembersProject((prev) => ({ ...prev, applicants: (prev.applicants || []).filter((e) => e !== email), seatsFilled: Math.max(0, (prev.seatsFilled || 0) - 1) })); }}
+          onClose={() => setMembersProject(null)}
+        />
+      )}
     </div>
   );
 }
@@ -550,6 +663,8 @@ export default function Admin({
   onUpdateDepartments,
   onApproveRequest,
   onRejectRequest,
+  onAddProjectMember,
+  onRemoveProjectMember,
 }) {
   const [tab, setTab] = useState("projects");
   const pendingCount = (pending || []).filter((p) => p.status === "pending").length;
@@ -594,7 +709,7 @@ export default function Admin({
         ))}
       </div>
 
-      {tab === "projects" && <AdminProjectsTab projects={projects || []} />}
+      {tab === "projects" && <AdminProjectsTab projects={projects || []} users={users} onAddMember={onAddProjectMember} onRemoveMember={onRemoveProjectMember} />}
       {tab === "pending" && <AdminSubmissionsTab pending={pending || []} onApprove={onApprove} onReject={onReject} />}
       {tab === "requests" && <AdminRequestsTab requests={projectRequests || []} onApprove={onApproveRequest} onReject={onRejectRequest} />}
       {tab === "users" && (
