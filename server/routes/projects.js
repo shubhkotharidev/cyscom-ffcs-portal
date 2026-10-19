@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require('../config/db');
-const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
+const { authenticateToken, requireSuperAdmin, requireAdminOrAbove } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -280,8 +280,8 @@ router.post('/requests/:reqId/reject', authenticateToken, async (req, res) => {
   }
 });
 
-// POST /api/projects/:id/members/add  (SuperAdmin — manually add user to project)
-router.post('/:id/members/add', authenticateToken, requireSuperAdmin, async (req, res) => {
+// POST /api/projects/:id/members/add  (Admin + SuperAdmin — manually add user to project)
+router.post('/:id/members/add', authenticateToken, requireAdminOrAbove, async (req, res) => {
   try {
     const { id } = req.params;
     const { email } = req.body;
@@ -339,8 +339,8 @@ router.post('/:id/members/add', authenticateToken, requireSuperAdmin, async (req
   }
 });
 
-// DELETE /api/projects/:id/members/:email  (SuperAdmin — remove user from project)
-router.delete('/:id/members/:email', authenticateToken, requireSuperAdmin, async (req, res) => {
+// DELETE /api/projects/:id/members/:email  (Admin + SuperAdmin — remove user from project)
+router.delete('/:id/members/:email', authenticateToken, requireAdminOrAbove, async (req, res) => {
   try {
     const { id, email } = req.params;
     const cleanEmail = decodeURIComponent(email).trim().toLowerCase();

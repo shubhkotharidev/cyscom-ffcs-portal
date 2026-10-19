@@ -35,8 +35,17 @@ const requireSuperAdmin = (req, res, next) => {
   next();
 };
 
+// Require Admin or Super Admin Role Guard
+const requireAdminOrAbove = (req, res, next) => {
+  if (!req.user || (req.user.role !== 'admin' && req.user.role !== 'super_admin')) {
+    return res.status(403).json({ error: 'Forbidden: Admin access required.' });
+  }
+  next();
+};
+
 module.exports = {
   JWT_SECRET,
   authenticateToken,
   requireSuperAdmin,
+  requireAdminOrAbove,
 };
